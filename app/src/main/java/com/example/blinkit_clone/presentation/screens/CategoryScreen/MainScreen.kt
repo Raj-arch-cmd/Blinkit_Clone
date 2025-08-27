@@ -94,7 +94,6 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     NavigationBar(
         modifier = Modifier
-            // ✅ THE FIX: Increased the height to give more space.
             .height(95.dp)
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp)),
@@ -108,7 +107,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
-                        modifier = Modifier.size(28.dp) // Slightly larger icon
+                        modifier = Modifier.size(28.dp)
                     )
                 },
                 label = {
@@ -132,12 +131,13 @@ fun BottomNavigationBar(navController: NavHostController) {
                         }
                     }
                 },
+                // ✅ THE FIX: Updated the colors to highlight the selected item.
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF6F6A1E),
-                    selectedTextColor = Color(0xFF6F6A1E),
+                    selectedIconColor = Color(0xFF0E8A44), // A vibrant green for selected icon
+                    selectedTextColor = Color(0xFF0E8A44), // A vibrant green for selected text
                     unselectedIconColor = Color.Gray,
                     unselectedTextColor = Color.Gray,
-                    indicatorColor = Color.Transparent
+                    indicatorColor = Color(0xFFE8F5E9) // A very light green for the background indicator
                 )
             )
         }

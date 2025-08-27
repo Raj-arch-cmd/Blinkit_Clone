@@ -1,11 +1,11 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -31,49 +31,34 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.blinkit_clone.Utills.CartViewModel
-import com.example.blinkit_clone.R
-
-// ✅ THE FIX: This file now imports the one, correct ProductItem definition.
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.ProductItem
 
 
-// Data Class used in this screen
+
+// --- Data Class ---
 data class Category(
     val name: String,
     val iconRes: Int
 )
 
-
+// --- UI Screen ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerticalTabProductsScreen(
     navController: NavHostController,
-    cartViewModel: CartViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    viewModel: VerticalTabViewModel = hiltViewModel()
 ) {
+    val categories by viewModel.categories.collectAsState()
+    val productItems by viewModel.productItems.collectAsState()
+    val filters by viewModel.filters.collectAsState()
 
-    val categories = listOf(
-        Category(name = "All", R.drawable.milk),
-        Category(name = "Fresh Vegetables", R.drawable.milk),
-        Category(name = "Fresh Fruits", R.drawable.milk),
-        Category(name = "Exotics", R.drawable.milk),
-        Category(name = "Coriander & Others", R.drawable.milk),
-        Category(name = "Flowers & Leaves", R.drawable.milk),
-        Category(name = "Seasonal", R.drawable.milk),
-        Category(name = "Freshly Cut & Sprouts", R.drawable.milk)
-    )
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
-    // ✅ THE FIX: Updated the list to use the correct ProductItem structure.
-    val productItems = listOf(
-        ProductItem(R.drawable.milk, "Pooja Flower Mix", "11 MINS", "100 g", emptyList(), 0, "₹39", "₹49", "20% OFF"),
-        ProductItem(R.drawable.milk, "Banana", "11 MINS", "3 pieces", listOf("Energy Booster"), 19, "₹39", "₹51", "23% OFF"),
-        ProductItem(R.drawable.milk, "Cold Pressed Aam Panna Juice", "11 MINS", "200 ml", emptyList(), 0, "₹51", "₹63", "19% OFF"),
-        ProductItem(R.drawable.milk, "Potato - New Crop (Aloo)", "11 MINS", "0.95 - 1.05 kg", emptyList(), 30, "₹29", "₹37", "21% OFF"),
-        ProductItem(R.drawable.milk, "Broccoli", "11 MINS", "100 g - 400 g", emptyList(), 0, "₹49", "₹56", ""),
-        ProductItem(R.drawable.milk, "Sweet Corn - Packet", "11 MINS", "180 g - 200 g", listOf("High Iron"), 0, "₹19", "₹47", "")
-    )
-
-    val filters = listOf("Filter", "Tomato", "Apple", "Kiwi", "Vegetables")
-    var selectedCategory by remember { mutableStateOf(categories[0]) }
+    LaunchedEffect(categories) {
+        if (selectedCategory == null && categories.isNotEmpty()) {
+            selectedCategory = categories.first()
+        }
+    }
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
@@ -100,11 +85,13 @@ fun VerticalTabProductsScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            CategorySidebar(
-                categories = categories,
-                selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it }
-            )
+            if (categories.isNotEmpty()) {
+                CategorySidebar(
+                    categories = categories,
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { selectedCategory = it }
+                )
+            }
             Column(
                 Modifier
                     .fillMaxSize()
@@ -125,7 +112,7 @@ fun VerticalTabProductsScreen(
 @Composable
 fun CategorySidebar(
     categories: List<Category>,
-    selectedCategory: Category,
+    selectedCategory: Category?,
     onCategorySelected: (Category) -> Unit
 ) {
     LazyColumn(
@@ -133,6 +120,7 @@ fun CategorySidebar(
             .shadow(elevation = 4.dp)
             .width(80.dp)
             .fillMaxHeight()
+            .background(Color.White)
     ) {
         items(categories) { category ->
             CategoryItem(
@@ -153,7 +141,7 @@ fun CategoryItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(if (isSelected) Color.Gray.copy(alpha = 0.1f) else Color.Transparent)
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -193,7 +181,7 @@ fun CategoryItem(
                     .width(4.dp)
                     .height(90.dp)
                     .background(
-                        color = Color(0xFFF28942B),
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp)
                     )
             )
@@ -225,7 +213,22 @@ fun ProductGrid(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterAndSortRow(filters: List<String>) {
-    // Placeholder for your filter UI
+    var selectedFilter by remember { mutableStateOf<String?>(null) }
+    LazyRow(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(filters) { filter ->
+            FilterChip(
+                selected = filter == selectedFilter,
+                onClick = { selectedFilter = if (selectedFilter == filter) null else filter },
+                label = { Text(filter) }
+                // ✅ THE FIX: The problematic 'border' parameter has been removed.
+                // The chip will now use its default border, which avoids the error.
+            )
+        }
+    }
 }
