@@ -49,7 +49,7 @@ fun BlinkitProfileScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(Color.White)
-                .verticalScroll(rememberScrollState()) // Make the column scrollable
+                .verticalScroll(rememberScrollState())
         ) {
             // Profile Header
             Box(
@@ -80,29 +80,53 @@ fun BlinkitProfileScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("John Doe", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    Text("+91 9876543210", fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
+                    // ✅ THE FIX: Updated the name and phone number.
+                    Text("Raj Singh", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("+91 8957132374", fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
                 }
             }
 
             // Profile Options
             Column(modifier = Modifier.padding(16.dp)) {
-                ProfileOptionItem(icon = Icons.Default.LocationOn, title = "Addresses", subtitle = "Manage your delivery addresses") {}
+                // ✅ THE FIX: Made all options clickable and navigate to their respective screens.
+                ProfileOptionItem(
+                    icon = Icons.Default.LocationOn,
+                    title = "Addresses",
+                    subtitle = "Manage your delivery addresses"
+                ) {
+                    navController.navigate(Screens.AddressScreen.route)
+                }
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
-                ProfileOptionItem(icon = painterResource(R.drawable.heart1), title = "Favorites", subtitle = "Your favorite products") {}
+                ProfileOptionItem(
+                    icon = painterResource(R.drawable.heart1),
+                    title = "Favorites",
+                    subtitle = "Your favorite products"
+                ) {
+                    navController.navigate(Screens.FavoritesScreen.route)
+                }
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
-                ProfileOptionItem(icon = painterResource(R.drawable.order), title = "Orders", subtitle = "View your order history") {}
+                ProfileOptionItem(
+                    icon = painterResource(R.drawable.order),
+                    title = "Orders",
+                    subtitle = "View your order history"
+                ) {
+                    navController.navigate(Screens.OrdersScreen.route)
+                }
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
-                ProfileOptionItem(icon = painterResource(R.drawable.wallet), title = "Payments", subtitle = "Payment methods & wallet") {}
+                ProfileOptionItem(
+                    icon = painterResource(R.drawable.wallet),
+                    title = "Payments",
+                    subtitle = "Payment methods & wallet"
+                ) {
+                    navController.navigate(Screens.PaymentsScreen.route)
+                }
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
-
-                // ✅ THE FIX: Added the Log Out item to the list.
                 ProfileOptionItem(
                     icon = painterResource(R.drawable.logout),
                     title = "Log Out",
                     subtitle = "End your current session"
                 ) {
-                    viewModel.signOut() // This will log the user out
+                    viewModel.signOut()
                 }
             }
         }

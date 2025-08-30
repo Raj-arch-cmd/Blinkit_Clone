@@ -58,6 +58,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose")
     implementation(libs.androidx.foundation.layout.android)
     implementation(libs.androidx.storage)
+    implementation(libs.litert.support.api)
 
     // Testing
     testImplementation(libs.junit)

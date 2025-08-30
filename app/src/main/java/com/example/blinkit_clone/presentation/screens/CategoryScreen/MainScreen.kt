@@ -4,10 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -26,8 +23,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.blinkit_clone.Profile.AddressScreen
+import com.example.blinkit_clone.Profile.FavoritesScreen
+import com.example.blinkit_clone.Profile.OrdersScreen
+import com.example.blinkit_clone.Profile.PaymentsScreen
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.presentation.screens.HomeScreen
+
 import com.example.projectnew.presentation.screens.CategoryScreens.OrderAgainScreen
 import com.example.projectnew.presentation.screens.PhoneAuthViewModel
 
@@ -73,6 +75,20 @@ fun MainScreen(
                     listState = listState,
                     viewModel = viewModel
                 )
+            }
+
+            // ✅ THE FIX: Replaced placeholders with calls to your new, functional screens.
+            composable(Screens.AddressScreen.route) {
+                AddressScreen(navController = bottomBarNavController)
+            }
+            composable(Screens.FavoritesScreen.route) {
+                FavoritesScreen(navController = bottomBarNavController)
+            }
+            composable(Screens.OrdersScreen.route) {
+                OrdersScreen(navController = bottomBarNavController)
+            }
+            composable(Screens.PaymentsScreen.route) {
+                PaymentsScreen(navController = bottomBarNavController)
             }
         }
     }
@@ -131,13 +147,12 @@ fun BottomNavigationBar(navController: NavHostController) {
                         }
                     }
                 },
-                // ✅ THE FIX: Updated the colors to highlight the selected item.
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF0E8A44), // A vibrant green for selected icon
-                    selectedTextColor = Color(0xFF0E8A44), // A vibrant green for selected text
+                    selectedIconColor = Color(0xFF0E8A44),
+                    selectedTextColor = Color(0xFF0E8A44),
                     unselectedIconColor = Color.Gray,
                     unselectedTextColor = Color.Gray,
-                    indicatorColor = Color(0xFFE8F5E9) // A very light green for the background indicator
+                    indicatorColor = Color(0xFFE8F5E9)
                 )
             )
         }
