@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.Profile
+package com.example.blinkit_clone.presentation.screens
 
 
 import androidx.compose.foundation.Image

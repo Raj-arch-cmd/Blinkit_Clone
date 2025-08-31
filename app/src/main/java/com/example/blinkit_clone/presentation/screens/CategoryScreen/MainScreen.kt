@@ -1,45 +1,52 @@
-package com.example.blinkit_clone.presentation.screens.CategoryScreen
+package com.example.blinkit_clone.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.blinkit_clone.Profile.AddressScreen
-import com.example.blinkit_clone.Profile.FavoritesScreen
-import com.example.blinkit_clone.Profile.OrdersScreen
-import com.example.blinkit_clone.Profile.PaymentsScreen
 import com.example.blinkit_clone.R
-import com.example.blinkit_clone.presentation.screens.HomeScreen
+import com.example.blinkit_clone.Utills.CartViewModel
 
-import com.example.projectnew.presentation.screens.CategoryScreens.OrderAgainScreen
-import com.example.projectnew.presentation.screens.PhoneAuthViewModel
+// ✅ THE FIX: Corrected all import paths to match your final project structure.
+import com.example.blinkit_clone.presentation.screens.CategoryScreen.*
+import com.example.blinkit_clone.presentation.screens.CategoryScreens.OrderAgainScreen
+import com.example.blinkit_clone.presentation.screens.cart.CartScreen
+import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     isVisible: Boolean,
     listState: LazyListState,
-    viewModel: PhoneAuthViewModel
+    viewModel: PhoneAuthViewModel,
+    cartViewModel: CartViewModel = hiltViewModel()
 ) {
     val bottomBarNavController = rememberNavController()
+    val totalItems by cartViewModel.totalItemCount.collectAsState(initial = 0)
+    val totalPrice by cartViewModel.totalPrice.collectAsState(initial = 0.0)
 
     Scaffold(
         bottomBar = {
@@ -50,7 +57,45 @@ fun MainScreen(
             ) {
                 BottomNavigationBar(navController = bottomBarNavController)
             }
-        }
+        },
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = totalItems > 0,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it })
+            ) {
+                FloatingActionButton(
+                    onClick = { bottomBarNavController.navigate(Screens.CartScreen.route) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    containerColor = Color(0xFF0E8A44)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "$totalItems item${if (totalItems > 1) "s" else ""} | ${String.format("₹%.2f", totalPrice)}",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "View Cart",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
         NavHost(
             navController = bottomBarNavController,
@@ -64,7 +109,11 @@ fun MainScreen(
                 CategoryScreen(navController = bottomBarNavController, listState = listState)
             }
             composable(Screens.OrderAgainScreen.route) {
-                OrderAgainScreen(navController = bottomBarNavController, listState = listState)
+                OrderAgainScreen(
+                    navController = bottomBarNavController,
+                    listState = listState,
+                    cartViewModel = cartViewModel
+                )
             }
             composable(Screens.PrintScreen.route) {
                 PrintScreen(navController = bottomBarNavController, listState = listState)
@@ -76,19 +125,15 @@ fun MainScreen(
                     viewModel = viewModel
                 )
             }
-
-            // ✅ THE FIX: Replaced placeholders with calls to your new, functional screens.
-            composable(Screens.AddressScreen.route) {
-                AddressScreen(navController = bottomBarNavController)
-            }
-            composable(Screens.FavoritesScreen.route) {
-                FavoritesScreen(navController = bottomBarNavController)
-            }
-            composable(Screens.OrdersScreen.route) {
-                OrdersScreen(navController = bottomBarNavController)
-            }
-            composable(Screens.PaymentsScreen.route) {
-                PaymentsScreen(navController = bottomBarNavController)
+            composable(Screens.AddressScreen.route) { AddressScreen(navController = bottomBarNavController) }
+            composable(Screens.FavoritesScreen.route) { FavoritesScreen(navController = bottomBarNavController) }
+            composable(Screens.PaymentsScreen.route) { PaymentsScreen(navController = bottomBarNavController) }
+            composable(Screens.OrdersScreen.route) { OrdersScreen(navController = bottomBarNavController) }
+            composable(Screens.CartScreen.route) {
+                CartScreen(
+                    navController = bottomBarNavController,
+                    cartViewModel = cartViewModel
+                )
             }
         }
     }
@@ -105,8 +150,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.Profile
     )
 
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
         modifier = Modifier
@@ -118,7 +163,6 @@ fun BottomNavigationBar(navController: NavHostController) {
     ) {
         items.forEach { item ->
             NavigationBarItem(
-                alwaysShowLabel = true,
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
@@ -129,10 +173,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                 label = {
                     Text(
                         text = item.title,
-                        fontSize = 12.sp,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 selected = currentRoute == item.route,
@@ -147,12 +189,13 @@ fun BottomNavigationBar(navController: NavHostController) {
                         }
                     }
                 },
+                alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color(0xFF0E8A44),
                     selectedTextColor = Color(0xFF0E8A44),
                     unselectedIconColor = Color.Gray,
                     unselectedTextColor = Color.Gray,
-                    indicatorColor = Color(0xFFE8F5E9)
+                    indicatorColor = Color(0xFFC8E6C9).copy(alpha = 0.5f)
                 )
             )
         }
@@ -167,12 +210,10 @@ sealed class BottomNavItem(val title: String, val icon: Int, val route: String) 
     object Profile : BottomNavItem("Profile", R.drawable.profile, Screens.ProfileScreen.route)
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {
     val navController = rememberNavController()
-    Box(modifier = Modifier.background(Color.LightGray).padding(16.dp)) {
-        BottomNavigationBar(navController = navController)
-    }
+    BottomNavigationBar(navController = navController)
 }
+

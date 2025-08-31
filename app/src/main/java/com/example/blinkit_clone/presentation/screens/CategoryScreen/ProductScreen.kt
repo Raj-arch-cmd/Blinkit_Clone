@@ -12,22 +12,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.R
-
+import com.example.blinkit_clone.Utills.CartViewModel
+import com.example.blinkit_clone.data.model.ProductItem
+import com.example.blinkit_clone.presentation.components.QuantitySelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,12 +42,24 @@ fun ProductScreen(
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
     val lazyListState = rememberLazyListState()
-    val productName by remember { mutableStateOf("Hydroponic Sweet Bell Pepper") }
-    val quantity by remember { mutableStateOf("2 pcs (200-350 g)") }
-    val price by remember { mutableStateOf("₹170") }
-    val mrp by remember { mutableStateOf("₹250") }
-    val offer by remember { mutableStateOf("32% OFF") }
-    val deliveryTime by remember { mutableStateOf("10 MINS") }
+
+    // Example product - in a real app, this would be passed as an argument
+    val product = remember {
+        ProductItem(
+            imageRes = R.drawable.springroll,
+            name = "Hydroponic Sweet Bell Pepper",
+            deliveryTime = "10 MINS",
+            quantity = "2 pcs (200-350 g)",
+            tags = emptyList(),
+            recipeCount = 0,
+            price = 170.0,
+            mrp = 250.0,
+            discountPercentage = "32% OFF"
+        )
+    }
+
+    val quantityInCart by cartViewModel.cartItems.collectAsState()
+    val currentQuantity = quantityInCart[product] ?: 0
 
     val showTitle by remember {
         derivedStateOf {
@@ -68,7 +70,8 @@ fun ProductScreen(
 
     val topBarAlpha by animateFloatAsState(
         targetValue = if (showTitle) 1f else 0f,
-        animationSpec = tween(durationMillis = 500)
+        animationSpec = tween(durationMillis = 300),
+        label = "topBarAlpha"
     )
 
     Scaffold(
@@ -76,41 +79,13 @@ fun ProductScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Hydroponic Sweet Bell Pepper",
+                        text = product.name,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                 },
                 modifier = Modifier.alpha(topBarAlpha),
-                actions = {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier
-                            .background(Color.White, shape = CircleShape)
-                            .size(34.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.search),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .background(Color.White, shape = CircleShape)
-                            .size(34.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.faltuh),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
@@ -121,7 +96,7 @@ fun ProductScreen(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.arrowdown),
-                            contentDescription = null,
+                            contentDescription = "Back",
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -138,28 +113,39 @@ fun ProductScreen(
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom))
                     .background(Color.White)
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(text = quantity, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Column(modifier = Modifier.weight(1f)) {
                     Row {
-                        Text(text = price, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = String.format("₹%.2f", product.price), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = mrp,
+                            text = String.format("₹%.2f", product.mrp),
                             fontSize = 16.sp,
-                            textDecoration = TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough,
+                            color = Color.Gray
                         )
                     }
-                    Text(text = "Inclusive all taxes", fontSize = 12.sp)
+                    Text(text = "Inclusive of all taxes", fontSize = 12.sp, color = Color.Gray)
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = { cartViewModel.addItem() },
-                    colors = ButtonDefaults.buttonColors(colorResource(R.color.viewActivityClickbleColor)),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text(text = "Add to cart", fontSize = 16.sp)
+
+                if (currentQuantity == 0) {
+                    Button(
+                        onClick = { cartViewModel.addProduct(product) },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.viewActivityClickbleColor)),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.height(50.dp)
+                    ) {
+                        Text(text = "Add to cart", fontSize = 16.sp)
+                    }
+                } else {
+                    QuantitySelector(
+                        quantity = currentQuantity,
+                        onAdd = { cartViewModel.addProduct(product) },
+                        onRemove = { cartViewModel.removeProduct(product) },
+                        modifier = Modifier.width(130.dp)
+                    )
                 }
             }
         }
@@ -168,64 +154,22 @@ fun ProductScreen(
             state = lazyListState,
             modifier = Modifier
                 .padding(bottom = innerPadding.calculateBottomPadding())
-                .background(color = colorResource(R.color.gray))
+                .background(color = Color.LightGray.copy(alpha = 0.1f))
         ) {
             item {
+                Image(
+                    painter = painterResource(product.imageRes),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = colorResource(R.color.gray))
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Image(
-                            painter = painterResource(R.drawable.springroll),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        ProductDetailCard(
-                            productName = productName,
-                            quantity = quantity,
-                            price = price,
-                            mrp = mrp,
-                            offer = offer,
-                            deliveryTime = deliveryTime
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        PeopleAlsoBoughtCard(navController, cartViewModel = cartViewModel)
-                    }
-                }
-            }
-            item {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 10.dp)) {
-                    // This section appears to be a footer
-                    Text(text = "Minute app", fontSize = 60.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
-                    Icon(
-                        painter = painterResource(R.drawable.heart1),
-                        contentDescription = "Heart",
-                        modifier = Modifier.padding(top = 10.dp).size(60.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-                        color = colorResource(R.color.gray),
-                        thickness = 1.5.dp
-                    )
-                    Text(
-                        text = "Grocers",
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(100.dp))
+                    ProductDetailCard(product = product)
+                    PeopleAlsoBoughtCard(navController, cartViewModel = cartViewModel)
                 }
             }
         }
@@ -233,118 +177,46 @@ fun ProductScreen(
 }
 
 @Composable
-fun ProductDetailCard(
-    productName: String,
-    quantity: String,
-    price: String,
-    mrp: String,
-    offer: String,
-    deliveryTime: String
-) {
+fun ProductDetailCard(product: ProductItem) {
     Card(
-        modifier = Modifier.width(92.dp), // Note: width seems small, transcribing as is
-        shape = RoundedCornerShape(
-            topStart = 12.dp,
-            topEnd = 12.dp,
-            bottomStart = 8.dp,
-            bottomEnd = 8.dp
-        ),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = productName,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = quantity,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(product.name, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = price,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "MRP", // Note: This appears redundant with the next line, transcribing as is
-                    fontSize = 16.sp,
-                    color = Color.DarkGray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = mrp,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray,
-                    textDecoration = TextDecoration.LineThrough
-                )
+            Text(product.quantity, fontSize = 16.sp, color = Color.Gray)
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(String.format("₹%.2f", product.price), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.Blue.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(4.dp)
+                Text(String.format("MRP ₹%.2f", product.mrp), fontSize = 16.sp, color = Color.Gray, textDecoration = TextDecoration.LineThrough)
+                Spacer(modifier = Modifier.width(12.dp))
+                if (product.discountPercentage.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier.background(Color.Blue.copy(alpha = 0.1f), shape = RoundedCornerShape(4.dp))
+                    ) {
+                        Text(
+                            text = product.discountPercentage,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Blue
                         )
-                ) {
-                    Text(
-                        text = offer,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(4.dp),
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Blue
-                    )
+                    }
                 }
             }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-            Row(
-                modifier = Modifier.padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(R.drawable.timer),
                     tint = colorResource(R.color.green),
-                    modifier = Modifier.size(14.dp),
+                    modifier = Modifier.size(20.dp),
                     contentDescription = "timer"
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = deliveryTime,
-                    fontSize = 14.sp,
-                    color = Color.DarkGray,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "View Product details",
-                    fontSize = 16.sp,
-                    color = colorResource(R.color.viewActivityClickbleColor),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    painter = painterResource(R.drawable.arrowdown),
-                    modifier = Modifier.size(10.dp),
-                    tint = colorResource(R.color.viewActivityClickbleColor),
-                    contentDescription = "detail arrow"
-                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(product.deliveryTime, fontSize = 14.sp, color = Color.DarkGray, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -355,9 +227,12 @@ fun PeopleAlsoBoughtCard(
     navController: NavHostController,
     cartViewModel: CartViewModel
 ) {
-    // Note: The source images showed many duplicate items.
-    // This list represents the unique items shown.
-
+    val productItems = remember {
+        listOf(
+            ProductItem(R.drawable.milk, "Pooja Flower Mix", "11 MINS", "100 g", emptyList(), 0, 39.0, 49.0, "20% OFF"),
+            ProductItem(R.drawable.milk, "Banana", "11 MINS", "3 pieces", listOf("Energy Booster"), 19, 39.0, 51.0, "23% OFF")
+        )
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -367,20 +242,25 @@ fun PeopleAlsoBoughtCard(
             Text(
                 text = "People also bought",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(12.dp)
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
             )
             LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(3), // 3 items in one row
-                contentPadding = PaddingValues(horizontal = 4.dp),
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1010.dp) // Note: This is a very large fixed height
+                    .height(350.dp) // Adjust height as needed
             ) {
-
+                items(productItems) { product ->
+                    ProductCard(
+                        product = product,
+                        navController = navController,
+                        cartViewModel = cartViewModel
+                    )
+                }
             }
         }
     }

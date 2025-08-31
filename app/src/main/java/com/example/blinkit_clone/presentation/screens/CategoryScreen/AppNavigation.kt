@@ -18,11 +18,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.MainScreen
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
+import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
 import com.example.projectnew.presentation.screens.PhoneAuthScreen
-import com.example.projectnew.presentation.screens.PhoneAuthViewModel
+
 import kotlinx.coroutines.flow.distinctUntilChanged
+
+// ✅ THE FIX: Corrected the import paths to match your project structure.
+
 
 @Composable
 fun AppNavigation(
@@ -31,11 +34,8 @@ fun AppNavigation(
     val navController = rememberNavController()
     val isLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
-    // ✅ THE FIX: This effect listens for changes in the login state.
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn == false) {
-            // If the user logs out, navigate them to the auth screen
-            // and clear all the previous screens from history.
             navController.navigate(Screens.PhoneAuthScreen.route) {
                 popUpTo(navController.graph.id) {
                     inclusive = true

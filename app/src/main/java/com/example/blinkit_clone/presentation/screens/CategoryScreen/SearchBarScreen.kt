@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.blinkit_clone.R
+import com.example.blinkit_clone.data.model.ProductItem
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +27,13 @@ fun SearchBarScreen(navController: NavHostController, listState: LazyListState) 
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val recentSearches = remember { listOf("Milk", "Bread", "Eggs", "Fruits") }
     val popularSearches = remember {
-        listOf("Organic Products", "Dairy Products", "Snacks", "Beverages", "Personal Care")
+        listOf(
+            "Organic Products",
+            "Dairy Products",
+            "Snacks",
+            "Beverages",
+            "Personal Care"
+        )
     }
 
     Scaffold(
@@ -37,7 +45,12 @@ fun SearchBarScreen(navController: NavHostController, listState: LazyListState) 
                         onValueChange = { searchText = it },
                         placeholder = { Text("Search for products...") },
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
@@ -62,22 +75,43 @@ fun SearchBarScreen(navController: NavHostController, listState: LazyListState) 
                 .background(Color.White)
         ) {
             if (searchText.text.isEmpty()) {
-                Text("Recent Searches", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
+                // Recent Searches
+                Text(
+                    "Recent Searches",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+
                 recentSearches.forEach { search ->
-                    SearchHistoryItem(search) { searchText = TextFieldValue(search) }
+                    SearchHistoryItem(search) {
+                        searchText = TextFieldValue(search)
+                    }
                 }
+
                 Divider(modifier = Modifier.padding(vertical = 16.dp))
-                Text("Popular Categories", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
+
+                // Popular Searches
+                Text(
+                    "Popular Categories",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+
                 popularSearches.forEach { category ->
-                    SearchCategoryItem(category) { searchText = TextFieldValue(category) }
+                    SearchCategoryItem(category) {
+                        searchText = TextFieldValue(category)
+                    }
                 }
             } else {
+                // Search Results
                 val filteredResults = remember(searchText.text) {
+                    // This would typically come from a ViewModel
                     listOf(
-                        ProductItem(R.drawable.milk, "Organic Milk", "10 MINS", "1L", emptyList(), 0, "₹60", "₹67", "10% OFF"),
-                        ProductItem(R.drawable.bread, "Whole Wheat Bread", "10 MINS", "400g", emptyList(), 0, "₹45", "₹48", "5% OFF")
+                        ProductItem(R.drawable.milk, "Organic Milk", "10 MINS", "1L", emptyList(), 0, 60.0, 67.0, "10% OFF"),
+                        ProductItem(R.drawable.bread, "Whole Wheat Bread", "10 MINS", "400g", emptyList(), 0, 45.0, 48.0, "5% OFF")
                     ).filter { it.name.contains(searchText.text, ignoreCase = true) }
                 }
+
                 LazyColumn(state = listState) {
                     items(filteredResults) { product ->
                         SearchResultItem(product) {
@@ -132,7 +166,8 @@ fun SearchResultItem(product: ProductItem, onClick: () -> Unit) {
             Text(product.name, style = MaterialTheme.typography.bodyLarge)
             Text(product.quantity, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
         }
-        Text(product.price, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+        Text(String.format("₹%.2f", product.price), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
     }
     Divider()
 }
+

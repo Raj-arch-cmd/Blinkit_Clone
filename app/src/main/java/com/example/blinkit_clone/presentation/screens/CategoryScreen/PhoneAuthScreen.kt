@@ -12,6 +12,7 @@ import com.example.blinkit_clone.Common.AuthState
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
 import com.example.blinkit_clone.presentation.screens.OtpVerificationScreen
 import com.example.blinkit_clone.presentation.screens.PhoneNumberInputScreen
+import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
 
 @Composable
 fun PhoneAuthScreen(

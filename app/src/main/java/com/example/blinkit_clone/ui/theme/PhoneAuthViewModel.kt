@@ -1,4 +1,4 @@
-package com.example.projectnew.presentation.screens
+package com.example.blinkit_clone.ui.theme
 
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package com.example.projectnew.presentation.screens.CategoryScreens
+package com.example.blinkit_clone.presentation.screens.CategoryScreens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -6,9 +6,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import com.example.blinkit_clone.R
@@ -30,7 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,19 +43,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.Utills.OrderAgainViewModel
+import com.example.blinkit_clone.data.model.ProductItem
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.BlinkitSearchBar
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.ProductCard
+
 
 @Composable
 fun OrderAgainScreen(
     navController: NavHostController,
     listState: LazyListState,
+    // ✅ THE FIX: Made the cartViewModel optional by providing a default hiltViewModel().
     cartViewModel: CartViewModel = hiltViewModel(),
-    viewModel: OrderAgainViewModel = hiltViewModel()
+    orderAgainViewModel: OrderAgainViewModel = hiltViewModel()
 ) {
     val firstVisibleItemScrollOffset by remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val isScrolled by remember { derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 } }
+    val productItems by orderAgainViewModel.productItems.collectAsState()
 
     val headerHeightdp by animateDpAsState(
         targetValue = if (isScrolled) 0.dp else 88.dp,
@@ -61,10 +67,7 @@ fun OrderAgainScreen(
         label = "HeaderHeight"
     )
 
-    val productItems by viewModel.productItems.collectAsState()
-
     Scaffold(
-        containerColor = Color(0xFFF9F9F9),
         modifier = Modifier.statusBarsPadding(),
         topBar = {
             Column(
@@ -73,8 +76,8 @@ fun OrderAgainScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFF6F6A1E),
-                                Color(0xFF9FAD4C)
+                                Color(0xFF6F6A1E), // Darker gold
+                                Color(0xFF9FAD4C)  // Medium amber gold
                             )
                         )
                     )
@@ -89,16 +92,16 @@ fun OrderAgainScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Grocery in,", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.8f))
-                            Text("10 minutes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("Grocery in,", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black.copy(alpha = 0.7f))
+                            Text("10 minutes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Box(
                             modifier = Modifier
                                 .padding(top = 8.dp)
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(color = Color.White.copy(alpha = 0.2f))
-                                .clickable { /* Nav to profile */ },
+                                .background(color = Color.Black.copy(alpha = 0.5f))
+                                .clickable { /* Navigate to profile screen */ },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
@@ -108,8 +111,8 @@ fun OrderAgainScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 2.dp, bottom = 8.dp)
                     ) {
-                        Text("Bishapura, Vijay Nagar...", fontSize = 14.sp, color = Color.White.copy(alpha = 0.9f), maxLines = 1)
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Expand", tint = Color.White)
+                        Text("Bishapura, Vijay Nagar, Bhim Nagar, Vijay", fontSize = 14.sp, color = Color.Black.copy(alpha = 0.8f), maxLines = 1)
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Expand", tint = Color.Black)
                     }
                 }
                 BlinkitSearchBar(navController)
@@ -117,72 +120,66 @@ fun OrderAgainScreen(
             }
         }
     ) { innerPadding ->
-        // ✅ THE FIX: Replaced LazyVerticalGrid with a LazyColumn.
-        // This allows the screen to correctly use the listState for animations.
-        LazyColumn(
-            state = listState,
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
             modifier = Modifier.fillMaxSize().padding(innerPadding),
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     text = "Bestsellers",
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
                 )
             }
 
-            // ✅ THE FIX: Manually create a grid layout using chunked rows.
-            items(productItems.chunked(3)) { rowItems ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    rowItems.forEach { product ->
-                        Box(modifier = Modifier.weight(1f)) {
-                            ProductCard(
-                                product = product,
-                                navController = navController,
-                                cartViewModel = cartViewModel
-                            )
-                        }
-                    }
-                    // Add spacers if the row is not full to maintain alignment
-                    if (rowItems.size < 3) {
-                        for (i in 0 until (3 - rowItems.size)) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
+            items(productItems) { product ->
+                ProductCard(
+                    product = product,
+                    navController = navController,
+                    cartViewModel = cartViewModel
+                )
             }
 
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 32.dp, bottom = 16.dp),
+                        .padding(vertical = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.blinkit_logo),
-                        contentDescription = "Blinkit Logo",
-                        modifier = Modifier.size(40.dp),
-                        tint = Color.Gray.copy(alpha = 0.6f)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Made in India with ❤️",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
+                        text = "Made in India",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
                         color = Color.Gray.copy(alpha = 0.8f)
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "last Minute app",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Gray.copy(alpha = 0.8f)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            painter = painterResource(R.drawable.heart1),
+                            contentDescription = "heart",
+                            modifier = Modifier.size(24.dp),
+                            tint = Color.Gray.copy(alpha = 0.8f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(40.dp))
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                        color = Color.LightGray,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = colorResource(R.color.lightGray),
                         thickness = 1.dp
                     )
                 }
@@ -196,5 +193,10 @@ fun OrderAgainScreen(
 fun OrderAgainScreenPreview() {
     val navController = rememberNavController()
     val listState = rememberLazyListState()
-    OrderAgainScreen(navController = navController, listState = listState)
+    OrderAgainScreen(
+        navController = navController,
+        listState = listState,
+        cartViewModel = hiltViewModel() // Use hiltViewModel for preview
+    )
 }
+
