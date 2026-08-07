@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.blinkit_clone.R
-import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
+import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
