@@ -48,17 +48,19 @@ sealed class Screens(val route: String) {
     object CategoryScreen : Screens("category")
     object OrderAgainScreen : Screens("order_again")
     object PrintScreen : Screens("print")
-    object SearchBarScreen : Screens("search_screen")
     object ProfileScreen : Screens("profile")
-    object ProductScreen : Screens("product_screen")
+    object AddressScreen : Screens("address")
+    object FavoritesScreen : Screens("favorites")
+    object PaymentsScreen : Screens("payments")
+    object OrdersScreen : Screens("orders")
+    object CartScreen : Screens("cart")
+    object ProductScreen : Screens("product") // Assuming a product detail screen
     object VerticalTabProductsScreen : Screens("vertical_tab_products")
-    object FinalCheckOutScreen : Screens("final_checkout_screen")
-    object AddressScreen : Screens("address_screen")
-    object FavoritesScreen : Screens("favorites_screen")
-    object PaymentsScreen : Screens("payments_screen")
-    object OrdersScreen : Screens("orders_screen")
-    object CartScreen : Screens("cart_screen") // New route for the cart
+    object FinalCheckOutScreen : Screens("final_checkout")
+    object SearchBarScreen : Screens("search") // New route
 }
+
+
 
 @Composable
 fun AutoScrollingProductCarousel(navController: NavHostController) {
