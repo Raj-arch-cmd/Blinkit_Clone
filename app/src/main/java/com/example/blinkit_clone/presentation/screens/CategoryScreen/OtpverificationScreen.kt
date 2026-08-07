@@ -24,8 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
-
+import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 
 
 @Composable

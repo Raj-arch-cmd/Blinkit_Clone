@@ -38,7 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
-import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
+import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
+
 import kotlinx.coroutines.delay
 import kotlin.math.ceil
 

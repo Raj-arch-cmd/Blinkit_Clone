@@ -1,6 +1,6 @@
-package com.example.blinkit_clone.ui.theme
+package com.example.blinkit_clone.presentation.screens.auth
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.blinkit_clone.Common.AuthState
@@ -20,39 +20,27 @@ import javax.inject.Inject
 class PhoneAuthViewModel @Inject constructor() : ViewModel() {
 
     private val auth = FirebaseAuth.getInstance()
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState = _authState.asStateFlow()
 
     private val _isUserLoggedIn = MutableStateFlow<Boolean?>(null)
     val isUserLoggedIn = _isUserLoggedIn.asStateFlow()
 
-    private var verificationId: String = ""
-
-    // ✅ THE FIX: Create a listener that actively checks for auth changes.
-    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-        // This will be called whenever the user signs in or out.
-        _isUserLoggedIn.value = firebaseAuth.currentUser != null
-    }
+    private var verificationId: String? = null
 
     init {
-        auth.firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
-        // ✅ THE FIX: Start listening for auth changes when the ViewModel is created.
-        auth.addAuthStateListener(authStateListener)
+        // ✅ THE FIX: Comment out or delete this line to use real phone numbers.
+        // This line forces the app to use a local test environment.
+        // auth.useEmulator("10.0.2.2", 9099)
+
+        checkCurrentUser()
     }
 
-    // ✅ THE FIX: Stop listening when the ViewModel is destroyed to prevent memory leaks.
-    override fun onCleared() {
-        super.onCleared()
-        auth.removeAuthStateListener(authStateListener)
+    private fun checkCurrentUser() {
+        _isUserLoggedIn.value = auth.currentUser != null
     }
 
-    fun signOut() {
-        auth.signOut()
-        // The listener will automatically update _isUserLoggedIn to false.
-    }
-
-    fun sendVerificationCode(phoneNumber: String, activity: ComponentActivity) {
+    fun sendVerificationCode(phoneNumber: String, activity: Activity) {
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 signInWithCredential(credential)
@@ -62,10 +50,7 @@ class PhoneAuthViewModel @Inject constructor() : ViewModel() {
                 _authState.value = AuthState.Error(e.message ?: "Verification failed")
             }
 
-            override fun onCodeSent(
-                verId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
+            override fun onCodeSent(verId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 verificationId = verId
                 _authState.value = AuthState.CodeSent
             }
@@ -81,26 +66,34 @@ class PhoneAuthViewModel @Inject constructor() : ViewModel() {
     }
 
     fun verifyCode(code: String) {
-        if (verificationId.isEmpty()) {
-            _authState.value = AuthState.Error("Verification ID is empty")
+        if (verificationId.isNullOrEmpty()) {
+            _authState.value = AuthState.Error("Verification ID is missing")
             return
         }
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
+        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
         signInWithCredential(credential)
     }
 
     private fun signInWithCredential(credential: PhoneAuthCredential) {
         viewModelScope.launch {
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener { task ->
+            try {
+                auth.signInWithCredential(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         _authState.value = AuthState.Verified
-                        // The listener will automatically update _isUserLoggedIn to true.
+                        _isUserLoggedIn.value = true
                     } else {
-                        _authState.value =
-                            AuthState.Error(task.exception?.message ?: "Authentication failed")
+                        _authState.value = AuthState.Error(task.exception?.message ?: "Sign-in failed")
                     }
                 }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "An unexpected error occurred")
+            }
         }
+    }
+
+    fun signOut() {
+        auth.signOut()
+        _isUserLoggedIn.value = false
+        _authState.value = AuthState.Initial
     }
 }
