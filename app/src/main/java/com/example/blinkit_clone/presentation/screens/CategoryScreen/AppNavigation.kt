@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
-import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
+import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 import com.example.projectnew.presentation.screens.PhoneAuthScreen
 
 import kotlinx.coroutines.flow.distinctUntilChanged

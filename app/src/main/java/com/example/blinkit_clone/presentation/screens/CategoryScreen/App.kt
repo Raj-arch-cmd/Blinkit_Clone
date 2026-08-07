@@ -35,7 +35,7 @@ fun NavigationGraph(
         }
 
         composable(Screens.OrderAgainScreen.route) {
-            OrderAgainScreen(navController = navController, listState = listState)
+            OrderAgainScreen(navController = navController, listState = listState , cartViewModel = cartViewModel)
         }
 
         composable(Screens.CategoryScreen.route) {
@@ -47,7 +47,7 @@ fun NavigationGraph(
         }
 
         composable(Screens.SearchBarScreen.route) {
-            SearchBarScreen(navController = navController, listState = listState)
+            SearchBarScreen(navController = navController, cartViewModel = cartViewModel)
         }
 
         composable(Screens.ProfileScreen.route) {

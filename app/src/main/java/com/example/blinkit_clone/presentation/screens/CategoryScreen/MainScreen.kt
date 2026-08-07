@@ -28,12 +28,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.Utills.CartViewModel
-
-// ✅ THE FIX: Corrected all import paths to match your final project structure.
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.*
 import com.example.blinkit_clone.presentation.screens.CategoryScreens.OrderAgainScreen
+import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 import com.example.blinkit_clone.presentation.screens.cart.CartScreen
-import com.example.blinkit_clone.ui.theme.PhoneAuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,7 +124,12 @@ fun MainScreen(
                 )
             }
             composable(Screens.AddressScreen.route) { AddressScreen(navController = bottomBarNavController) }
-            composable(Screens.FavoritesScreen.route) { FavoritesScreen(navController = bottomBarNavController) }
+            composable(Screens.FavoritesScreen.route) {
+                FavoritesScreen(
+                    navController = bottomBarNavController,
+                    cartViewModel = cartViewModel
+                )
+            }
             composable(Screens.PaymentsScreen.route) { PaymentsScreen(navController = bottomBarNavController) }
             composable(Screens.OrdersScreen.route) { OrdersScreen(navController = bottomBarNavController) }
             composable(Screens.CartScreen.route) {
