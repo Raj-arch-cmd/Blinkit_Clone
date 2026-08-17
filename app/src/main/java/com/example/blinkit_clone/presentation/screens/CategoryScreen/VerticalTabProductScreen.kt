@@ -49,28 +49,32 @@ fun VerticalTabProductsScreen(
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
 
-    val categories = listOf(
-        Category(name = "All", R.drawable.milk),
-        Category(name = "Fresh Vegetables", R.drawable.milk),
-        Category(name = "Fresh Fruits", R.drawable.milk),
-        Category(name = "Exotics", R.drawable.milk),
-        Category(name = "Coriander & Others", R.drawable.milk),
-        Category(name = "Flowers & Leaves", R.drawable.milk),
-        Category(name = "Seasonal", R.drawable.milk),
-        Category(name = "Freshly Cut & Sprouts", R.drawable.milk)
-    )
+    val categories = remember {
+        listOf(
+            Category(name = "All", R.drawable.milk),
+            Category(name = "Fresh Vegetables", R.drawable.milk),
+            Category(name = "Fresh Fruits", R.drawable.milk),
+            Category(name = "Exotics", R.drawable.milk),
+            Category(name = "Coriander & Others", R.drawable.milk),
+            Category(name = "Flowers & Leaves", R.drawable.milk),
+            Category(name = "Seasonal", R.drawable.milk),
+            Category(name = "Freshly Cut & Sprouts", R.drawable.milk)
+        )
+    }
 
     // ✅ THE FIX: Updated prices from String to Double
-    val productItems = listOf(
-        ProductItem(R.drawable.milk, "Pooja Flower Mix", "11 MINS", "100 g", emptyList(), 0, 39.0, 49.0, "20% OFF"),
-        ProductItem(R.drawable.milk, "Banana", "11 MINS", "3 pieces", listOf("Energy Booster"), 19, 39.0, 51.0, "23% OFF"),
-        ProductItem(R.drawable.milk, "Cold Pressed Aam Panna Juice", "11 MINS", "200 ml", emptyList(), 0, 51.0, 63.0, "19% OFF"),
-        ProductItem(R.drawable.milk, "Potato - New Crop (Aloo)", "11 MINS", "0.95 - 1.05 kg", emptyList(), 30, 29.0, 37.0, "21% OFF"),
-        ProductItem(R.drawable.milk, "Broccoli", "11 MINS", "100 g - 400 g", emptyList(), 0, 49.0, 56.0, ""),
-        ProductItem(R.drawable.milk, "Sweet Corn - Packet", "11 MINS", "180 g - 200 g", listOf("High Iron"), 0, 19.0, 47.0, "")
-    )
+    val productItems = remember {
+        listOf(
+            ProductItem(R.drawable.milk, "Pooja Flower Mix", "11 MINS", "100 g", emptyList(), 0, 39.0, 49.0, "20% OFF"),
+            ProductItem(R.drawable.milk, "Banana", "11 MINS", "3 pieces", listOf("Energy Booster"), 19, 39.0, 51.0, "23% OFF"),
+            ProductItem(R.drawable.milk, "Cold Pressed Aam Panna Juice", "11 MINS", "200 ml", emptyList(), 0, 51.0, 63.0, "19% OFF"),
+            ProductItem(R.drawable.milk, "Potato - New Crop (Aloo)", "11 MINS", "0.95 - 1.05 kg", emptyList(), 30, 29.0, 37.0, "21% OFF"),
+            ProductItem(R.drawable.milk, "Broccoli", "11 MINS", "100 g - 400 g", emptyList(), 0, 49.0, 56.0, ""),
+            ProductItem(R.drawable.milk, "Sweet Corn - Packet", "11 MINS", "180 g - 200 g", listOf("High Iron"), 0, 19.0, 47.0, "")
+        )
+    }
 
-    val filters = listOf("Filter", "Tomato", "Apple", "Kiwi", "Vegetables")
+    val filters = remember { listOf("Filter", "Tomato", "Apple", "Kiwi", "Vegetables") }
     var selectedCategory by remember { mutableStateOf(categories[0]) }
 
     Scaffold(
@@ -207,6 +211,7 @@ fun ProductGrid(
     navController: NavHostController,
     cartViewModel: CartViewModel
 ) {
+    val cartItems by cartViewModel.cartItems.collectAsState()
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(8.dp),
@@ -214,10 +219,13 @@ fun ProductGrid(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(products) { product ->
+            val quantity = cartItems[product] ?: 0
             ProductCard(
                 product = product,
-                navController = navController,
-                cartViewModel = cartViewModel
+                itemQuantity = quantity,
+                onAdd = { cartViewModel.addProduct(product) },
+                onRemove = { cartViewModel.removeProduct(product) },
+                navController = navController
             )
         }
     }

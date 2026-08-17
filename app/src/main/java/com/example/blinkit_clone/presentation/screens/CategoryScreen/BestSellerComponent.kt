@@ -1,6 +1,5 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,10 +30,6 @@ data class BestSellerData(
 
 @Composable
 fun BestSellerComponent(works: BestSellerData, navController: NavHostController) {
-    // ✅ THE FIX: Added logging to debug the crash.
-    // This will print the title and the number of images for each card in Logcat.
-    Log.d("BestSellerComponent", "Composing card for '${works.title}' with ${works.imageResids.size} images.")
-
     Card(
         modifier = Modifier
             .size(width = 120.dp, height = 180.dp)

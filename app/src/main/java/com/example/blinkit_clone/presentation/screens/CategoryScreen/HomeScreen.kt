@@ -27,7 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,13 +56,15 @@ fun HomeScreen(
     listState: LazyListState
 ) {
 
-    val categories = listOf(
-        BlinkItCategoryData("All", R.drawable.grocerybag),
-        BlinkItCategoryData("Summer", R.drawable.sun),
-        BlinkItCategoryData("Electronics", R.drawable.headphones),
-        BlinkItCategoryData("Beauty", R.drawable.blush),
-        BlinkItCategoryData("Kids", R.drawable.bottlebaby),
-    )
+    val categories = remember {
+        listOf(
+            BlinkItCategoryData("All", R.drawable.grocerybag),
+            BlinkItCategoryData("Summer", R.drawable.sun),
+            BlinkItCategoryData("Electronics", R.drawable.headphones),
+            BlinkItCategoryData("Beauty", R.drawable.blush),
+            BlinkItCategoryData("Kids", R.drawable.bottlebaby),
+        )
+    }
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     val firstVisibleItemScrollOffset by remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
@@ -82,11 +86,7 @@ fun HomeScreen(
         }
     }
 
-    val topContentOffset by animateDpAsState(
-        targetValue = -scrollOffset.value.dp,
-        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
-        label = "topContentOffset"
-    )
+    val density = LocalDensity.current
 
     val categoryBackground = remember(selectedTabIndex) {
         getCategoryGradient(categories[selectedTabIndex])
@@ -105,7 +105,9 @@ fun HomeScreen(
             ) {
                 Column(
                     modifier = Modifier
-                        .offset(y = topContentOffset)
+                        .graphicsLayer {
+                            translationY = with(density) { -scrollOffset.value.dp.toPx() }
+                        }
                         .height(headerHeightDp.value)
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 ) {

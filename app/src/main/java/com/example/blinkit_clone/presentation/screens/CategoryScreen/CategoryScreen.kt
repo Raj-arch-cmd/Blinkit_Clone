@@ -39,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,11 +75,7 @@ fun CategoryScreen(navController: NavHostController,listState: LazyListState){
             (firstVisibleItemIndex * 80 + firstVisibleItemScrollOffset).coerceAtMost(80)
         } }
 
-    val topContentOffset by animateDpAsState(
-        targetValue = -scrollOffset.value.dp,
-        animationSpec = tween(durationMillis = 500,easing = FastOutSlowInEasing),
-        label = "topContentOffset"
-    )
+    val density = LocalDensity.current
 
     Scaffold(
         modifier = Modifier
@@ -97,7 +95,10 @@ fun CategoryScreen(navController: NavHostController,listState: LazyListState){
                 // 🔸 SLIDING SECTION (Delivery info + location)
                 Column(
                     modifier = Modifier
-                        .offset(y = topContentOffset).height(headerHeightDp.value)
+                        .graphicsLayer {
+                            translationY = with(density) { -scrollOffset.value.dp.toPx() }
+                        }
+                        .height(headerHeightDp.value)
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 ) {
                     // Delivery Time Row

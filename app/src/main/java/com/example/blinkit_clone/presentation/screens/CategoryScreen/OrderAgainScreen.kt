@@ -39,6 +39,7 @@ fun OrderAgainScreen(
 ) {
     // ✅ THE FIX: Get the product list from the ViewModel's state
     val productItems by orderAgainViewModel.productItems.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsState()
 
     // The rest of your UI code remains largely the same...
     Scaffold(
@@ -69,10 +70,13 @@ fun OrderAgainScreen(
 
             // ✅ THE FIX: The grid now uses the productItems list from the ViewModel
             items(productItems) { product ->
+                val quantity = cartItems[product] ?: 0
                 ProductCard(
                     product = product,
-                    navController = navController,
-                    cartViewModel = cartViewModel
+                    itemQuantity = quantity,
+                    onAdd = { cartViewModel.addProduct(product) },
+                    onRemove = { cartViewModel.removeProduct(product) },
+                    navController = navController
                 )
             }
 

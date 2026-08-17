@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,24 +19,21 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.R
-import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.data.model.ProductItem
 import com.example.blinkit_clone.presentation.components.QuantitySelector
 
 @Composable
 fun ProductCard(
     product: ProductItem,
+    itemQuantity: Int,
+    onAdd: () -> Unit,
+    onRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    cartViewModel: CartViewModel = hiltViewModel()
+    navController: NavHostController
 ) {
-    val quantity by cartViewModel.cartItems.collectAsState()
-    val itemQuantity = quantity[product] ?: 0
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -103,7 +99,7 @@ fun ProductCard(
             ) {
                 if (itemQuantity == 0) {
                     Button(
-                        onClick = { cartViewModel.addProduct(product) },
+                        onClick = onAdd,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8E479).copy(alpha = 0.5f)),
@@ -114,8 +110,8 @@ fun ProductCard(
                 } else {
                     QuantitySelector(
                         quantity = itemQuantity,
-                        onAdd = { cartViewModel.addProduct(product) },
-                        onRemove = { cartViewModel.removeProduct(product) },
+                        onAdd = onAdd,
+                        onRemove = onRemove,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -158,10 +154,22 @@ fun ProductCardPreview() {
             .fillMaxWidth()
             .padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(modifier = Modifier.weight(1f)) {
-            ProductCard(product = productNotInCart, navController = navController)
+            ProductCard(
+                product = productNotInCart,
+                itemQuantity = 0,
+                onAdd = {},
+                onRemove = {},
+                navController = navController
+            )
         }
         Box(modifier = Modifier.weight(1f)) {
-            ProductCard(product = productInCart, navController = navController)
+            ProductCard(
+                product = productInCart,
+                itemQuantity = 1,
+                onAdd = {},
+                onRemove = {},
+                navController = navController
+            )
         }
     }
 }

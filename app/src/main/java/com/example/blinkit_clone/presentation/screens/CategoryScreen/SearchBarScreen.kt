@@ -30,6 +30,7 @@ fun SearchBarScreen(
     // Collect state from the ViewModel
     val searchText by viewModel.searchText.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsState()
 
     val recentSearches = remember { listOf("Milk", "Bread", "Eggs", "Fruits") }
     val popularSearches = remember {
@@ -83,11 +84,14 @@ fun SearchBarScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(searchResults) { product ->
+                        val quantity = cartItems[product] ?: 0
                         // Use the reusable ProductCard to display results
                         ProductCard(
                             product = product,
-                            navController = navController,
-                            cartViewModel = cartViewModel
+                            itemQuantity = quantity,
+                            onAdd = { cartViewModel.addProduct(product) },
+                            onRemove = { cartViewModel.removeProduct(product) },
+                            navController = navController
                         )
                     }
                 }

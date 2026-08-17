@@ -31,6 +31,7 @@ fun FavoritesScreen(
 ) {
     // Collects the list of products as state from the ViewModel
     val favoriteProducts by favoritesViewModel.favoriteProducts.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsState()
 
     Scaffold(
         topBar = {
@@ -52,11 +53,14 @@ fun FavoritesScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(favoriteProducts) { product ->
+                val quantity = cartItems[product] ?: 0
                 // Uses the standard ProductCard and passes the shared CartViewModel
                 ProductCard(
                     product = product,
-                    navController = navController,
-                    cartViewModel = cartViewModel
+                    itemQuantity = quantity,
+                    onAdd = { cartViewModel.addProduct(product) },
+                    onRemove = { cartViewModel.removeProduct(product) },
+                    navController = navController
                 )
             }
         }

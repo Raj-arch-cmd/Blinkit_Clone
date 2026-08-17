@@ -227,6 +227,7 @@ fun PeopleAlsoBoughtCard(
     navController: NavHostController,
     cartViewModel: CartViewModel
 ) {
+    val cartItems by cartViewModel.cartItems.collectAsState()
     val productItems = remember {
         listOf(
             ProductItem(R.drawable.milk, "Pooja Flower Mix", "11 MINS", "100 g", emptyList(), 0, 39.0, 49.0, "20% OFF"),
@@ -255,10 +256,13 @@ fun PeopleAlsoBoughtCard(
                     .height(350.dp) // Adjust height as needed
             ) {
                 items(productItems) { product ->
+                    val quantity = cartItems[product] ?: 0
                     ProductCard(
                         product = product,
-                        navController = navController,
-                        cartViewModel = cartViewModel
+                        itemQuantity = quantity,
+                        onAdd = { cartViewModel.addProduct(product) },
+                        onRemove = { cartViewModel.removeProduct(product) },
+                        navController = navController
                     )
                 }
             }

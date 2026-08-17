@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.R
-import kotlinx.coroutines.delay
 import kotlin.math.ceil
 
 
@@ -65,17 +65,19 @@ sealed class Screens(val route: String) {
 @Composable
 fun AutoScrollingProductCarousel(navController: NavHostController) {
 
-    val products = listOf(
-        ProductItemAutoScroll(imageRes = R.drawable.milk, name = "Milk"),
-        ProductItemAutoScroll(imageRes = R.drawable.tea, name = "Tea"),
-        ProductItemAutoScroll(imageRes = R.drawable.kitkat, name = "KitKat"),
-        ProductItemAutoScroll(imageRes = R.drawable.choclate, name = "Chocolate"),
-        ProductItemAutoScroll(imageRes = R.drawable.dryfruits, name = "Dry Fruits"),
-        ProductItemAutoScroll(imageRes = R.drawable.potato, name = "Potato"),
-        ProductItemAutoScroll(imageRes = R.drawable.brocli, name = "Broccoli"),
-        ProductItemAutoScroll(imageRes = R.drawable.fruitsandvegetables, name = "Fruits & Veg"),
-        ProductItemAutoScroll(imageRes = R.drawable.instantfood, name = "Instant Food"),
-    )
+    val products = remember {
+        listOf(
+            ProductItemAutoScroll(imageRes = R.drawable.milk, name = "Milk"),
+            ProductItemAutoScroll(imageRes = R.drawable.tea, name = "Tea"),
+            ProductItemAutoScroll(imageRes = R.drawable.kitkat, name = "KitKat"),
+            ProductItemAutoScroll(imageRes = R.drawable.choclate, name = "Chocolate"),
+            ProductItemAutoScroll(imageRes = R.drawable.dryfruits, name = "Dry Fruits"),
+            ProductItemAutoScroll(imageRes = R.drawable.potato, name = "Potato"),
+            ProductItemAutoScroll(imageRes = R.drawable.brocli, name = "Broccoli"),
+            ProductItemAutoScroll(imageRes = R.drawable.fruitsandvegetables, name = "Fruits & Veg"),
+            ProductItemAutoScroll(imageRes = R.drawable.instantfood, name = "Instant Food"),
+        )
+    }
 
     val scrollSpeed = 1.5f
     val spacing = 8.dp
@@ -110,12 +112,14 @@ fun AutoScrollingHorizontalColumn(
     val itemsPerColumn = 3
     val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
 
-    LaunchedEffect(Unit) {
+    val resetValue = products.size * totalItemWidthPx / itemsPerColumn
+
+    LaunchedEffect(resetValue) {
+        val startTime = System.nanoTime()
         while (true) {
-            delay(16)
-            scrollOffset.floatValue += speed
-            if (scrollOffset.floatValue >= (products.size * totalItemWidthPx / itemsPerColumn)) {
-                scrollOffset.floatValue = 0f
+            withFrameNanos { frameTime ->
+                val elapsedMillis = (frameTime - startTime) / 1_000_000
+                scrollOffset.floatValue = (elapsedMillis * speed / 16f) % resetValue
             }
         }
     }
