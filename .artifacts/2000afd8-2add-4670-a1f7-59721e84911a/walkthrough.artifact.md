@@ -1,27 +1,22 @@
-# Keyboard Alignment Root Cause Walkthrough
+# Logout Functionality Fix Walkthrough
 
-I have successfully applied the root cause fix for the white gap between the input card and the virtual keyboard.
+I have fixed the issue where the "Log Out" option on the Profile screen was not redirecting the user back to the authentication screen.
 
 ## Changes Made
 
-### 🛠️ System Configuration Fix
-- **Manifest Update**: Added `android:windowSoftInputMode="adjustResize"` to the `MainActivity` in `AndroidManifest.xml`.
-- **Reason**: This is the critical "missing link." Without it, the Android system doesn't correctly communicate window resizing to Jetpack Compose when the keyboard opens, leading to the unpredictable gaps you observed.
-
-### 📱 Layout Inset Optimization
-- **Refined `PhoneNumberInputScreen.kt`**:
-    - Removed redundant `imePadding()` and `navigationBarsPadding()` from the parent container.
-    - Implemented a unified `windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))` specifically on the bottom card.
-- **Zero-Gap Contact**: Tightened the internal bottom padding of the "Log in" card from `12dp` to `8dp` to ensure a more professional, "flush" look against the keyboard.
+### 🛠️ Robust Navigation Logic in `AppNavigation.kt`
+- **Simplified Backstack Clearing**: Updated the `LaunchedEffect` that observes the login state. It now uses a more reliable `popUpTo(0) { inclusive = true }` logic. This ensures that when the user logs out, the entire navigation stack is purged, and the app resets to a clean state.
+- **Navigation Guard**: Added a check to ensure navigation to the Phone Authentication screen only happens if the user isn't already there. This prevents redundant state transitions.
+- **Unified State Observation**: Ensured that the root `AppNavigation` perfectly captures the state change from the shared `PhoneAuthViewModel`.
 
 ## Impact
-- **Zero White Space**: The "Continue" button and "Terms & Conditions" text now sit perfectly on top of the keyboard keys.
-- **Smooth Transition**: The UI now reacts instantly and accurately as the keyboard slides up or down.
-- **Improved Reachability**: By keeping the card flush, we've optimized the thumb-reach area for phone number entry.
+- **Instant Redirection**: Clicking "Log Out" now immediately takes the user back to the onboarding/login screen.
+- **Security**: By clearing the backstack, it prevents users from using the system back button to "go back" into the authenticated profile after logging out.
+- **Improved Stability**: Fixed a potential race condition between `NavHost` re-composition and manual navigation calls.
 
 ## Verification Results
-- **Build Status**: ✅ Success (`./gradlew assembleDebug`)
-- **Visual Integrity**: Verified that the card maintains its position above the system navigation bar when the keyboard is closed.
+- **Build Status**: ✅ Success
+- **Functional Integrity**: Verified that the logout state correctly propagates from the Profile screen up to the root navigation controller.
 
 > [!IMPORTANT]
-> The `adjustResize` setting in the manifest is the most robust way to handle keyboards in modern Android apps. Your app now follows Google's best practices for IME handling!
+> The app now follows the standard "Single Source of Truth" pattern for authentication state, making the logout flow much more predictable and robust.

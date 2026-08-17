@@ -1,26 +1,27 @@
-# Keyboard Alignment Root Cause Fix
+# Logout Functionality Fix Plan
 
-This plan addresses the persistent white gap between the phone input card and the keyboard by correctly managing window insets and system-level soft input modes.
+This plan fixes the issue where the "Logout" option on the Profile screen is not working. The root cause is likely an unreliable navigation transition in the root `AppNavigation` and potential backstack conflicts.
 
 ## Root Cause Analysis
-1.  **Missing `adjustResize`**: Without `android:windowSoftInputMode="adjustResize"` in the manifest, the system may default to `adjustPan`, which moves the whole window and often conflicts with Compose's `imePadding()`, resulting in unpredictable white spaces.
-2.  **Inset Stacking**: Applying `navigationBarsPadding()` and `imePadding()` on the same container can cause "double padding" on some devices because the IME inset often already includes the area occupied by the navigation bar.
-3.  **Inset Consumption**: The root `Box` might not be consuming the insets, leading to children recalculating them incorrectly.
+1.  **Dynamic `startDestination` Issues**: Changing the `startDestination` of a `NavHost` dynamically based on state can lead to inconsistent behavior. The `NavHost` does not automatically transition to the new `startDestination` if it's already active.
+2.  **Unreliable `popUpTo`**: The use of `popUpTo(navController.graph.id)` with `inclusive = true` can sometimes invalidate the navigation graph itself, causing the transition to fail or the screen to go blank.
+3.  **Navigation Race Conditions**: When `isLoggedIn` changes, both the `NavHost` re-composition and the `LaunchedEffect` trigger simultaneously, which can lead to the `navigate` call being ignored if the graph is in a transitional state.
 
 ## Proposed Changes
 
-### 1. System Configuration
-#### [MODIFY] [AndroidManifest.xml](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/AndroidManifest.xml)
-- Explicitly set `android:windowSoftInputMode="adjustResize"` for `MainActivity`. This is a prerequisite for reliable keyboard handling in Compose.
+### 1. Navigation Logic
+#### [MODIFY] [AppNavigation.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/AppNavigation.kt)
+- **Robust Logout Transition**: Update the `LaunchedEffect` to use a more standard and reliable way to clear the backstack. Instead of popping to the root graph ID, we will pop everything up to the first destination.
+- **Fixed `startDestination`**: Ensure the `NavHost` handles the state transition smoothly.
+- **Navigation Guard**: Add a check to ensure we only trigger navigation if the current destination is actually part of the authenticated flow.
 
-### 2. UI Inset Optimization
-#### [MODIFY] [PhoneNumberInputScreen.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/PhoneNumberInputScreen.kt)
-- **Simplify Root Paddings**: Remove individual `navigationBarsPadding()` and `imePadding()` from the main `Column`.
-- **Use `safeDrawing`**: Apply `WindowInsets.safeDrawing` or a combination that automatically handles the transition between the navigation bar and the keyboard.
-- **Flush Container**: Ensure the bottom `Surface` (the login card) has **zero bottom padding** in its internal layout when the keyboard is open, allowing it to sit perfectly flush against the IME.
+### 2. ViewModel State
+#### [MODIFY] [PhoneAuthViewModel.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/auth/PhoneAuthViewModel.kt)
+- No changes required, as the `signOut` method correctly updates the `StateFlow`.
 
 ## Verification Plan
 
 ### Manual Verification
-- **Visual Inspection**: Open the phone input screen and trigger the keyboard. The "Terms & Conditions" text should be immediately above the keyboard with no white gap.
-- **Hide Keyboard**: Dismiss the keyboard and ensure the card returns to its position above the navigation bar without jumping.
+- **Logout Action**: Click the "Log Out" button on the Profile screen. Verify the app instantly transitions back to the Phone Authentication screen.
+- **Back Button Check**: After logging out, press the system back button. Verify the app exits instead of going back into the Profile screen.
+- **Fresh Login**: Verify that after logging out, you can log back in successfully.

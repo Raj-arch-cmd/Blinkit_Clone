@@ -2,7 +2,6 @@ package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,11 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
 import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
-
 import kotlinx.coroutines.flow.distinctUntilChanged
-
-// ✅ THE FIX: Corrected the import paths to match your project structure.
-
 
 @Composable
 fun AppNavigation(
@@ -33,11 +28,14 @@ fun AppNavigation(
     val navController = rememberNavController()
     val isLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
+    // Robust navigation logic for Login/Logout
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn == false) {
-            navController.navigate(Screens.PhoneAuthScreen.route) {
-                popUpTo(navController.graph.id) {
-                    inclusive = true
+            // Check if we are already on PhoneAuth to avoid redundant navigation
+            if (navController.currentDestination?.route != Screens.PhoneAuthScreen.route) {
+                navController.navigate(Screens.PhoneAuthScreen.route) {
+                    // Clear the entire backstack including the graph itself
+                    popUpTo(0) { inclusive = true }
                 }
             }
         }
@@ -52,6 +50,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
+        // The startDestination should be based on initial state
         startDestination = if (isLoggedIn == true) Screens.MainGraph.route else Screens.PhoneAuthScreen.route
     ) {
         composable(Screens.PhoneAuthScreen.route) {
