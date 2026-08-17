@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -21,12 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.blinkit_clone.R
-import com.example.blinkit_clone.presentation.screens.BlinkItCategoryData
 
 
 @Composable
@@ -35,60 +33,59 @@ fun BlinkItTabRow(
     onTabSelected: (Int) -> Unit,
     categories: List<BlinkItCategoryData>
 ) {
-    TabRow(
+    ScrollableTabRow(
         selectedTabIndex = selectedIndex,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color.White.copy(alpha = 0.9f)),
+            .background(Color.White),
+        edgePadding = 12.dp,
         indicator = { tabPositions ->
+            // Custom indicator logic is handled by the Tab background itself
             TabRowDefaults.Indicator(
-                modifier = Modifier
-                    .tabIndicatorOffset(tabPositions[selectedIndex])
-                    .padding(horizontal = 8.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                height = 0.dp // No visible indicator line
+                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
+                height = 0.dp,
+                color = Color.Transparent
             )
         },
-        divider = {}
+        divider = {},
+        containerColor = Color.White,
+        contentColor = Color.Black
     ) {
         categories.forEachIndexed { index, category ->
+            val isSelected = selectedIndex == index
             Tab(
-                selected = selectedIndex == index,
+                selected = isSelected,
                 onClick = { onTabSelected(index) },
                 modifier = Modifier
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .padding(vertical = 6.dp, horizontal = 2.dp)
+                    .clip(RoundedCornerShape(24.dp))
                     .background(
-                        if (selectedIndex == index) {
+                        if (isSelected) {
                             getCategoryGradient(category)
                         } else {
-                            Color.Transparent
+                            Color(0xFFF3F4F6)
                         }
                     ),
                 content = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 14.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = category.icon),
                             contentDescription = category.title,
-                            modifier = Modifier.size(24.dp),
-                            tint = if (selectedIndex == index) Color.White else Color.Black
+                            modifier = Modifier.size(18.dp),
+                            tint = if (isSelected) Color.White else Color.Gray
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = category.title,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (selectedIndex == index) Color.White else Color.Black,
+                            fontSize = 13.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) Color.White else Color.Gray,
                             textAlign = TextAlign.Center,
-                            // ✅ THE FIX: Ensure text stays on one line and doesn't wrap awkwardly.
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            maxLines = 1
                         )
                     }
                 }

@@ -30,7 +30,7 @@ import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 @Composable
 fun BlinkitProfileScreen(
     navController: NavHostController,
-    listState: LazyListState,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     viewModel: PhoneAuthViewModel = hiltViewModel()
 ) {
     Scaffold(

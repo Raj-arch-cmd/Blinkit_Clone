@@ -1,6 +1,5 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +21,7 @@ import com.example.blinkit_clone.R
 import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.data.model.ProductItem
 import com.example.blinkit_clone.presentation.components.QuantitySelector
+import coil.compose.AsyncImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,8 +158,8 @@ fun CheckoutItemRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(product.imageRes),
+        AsyncImage(
+            model = product.imageRes,
             contentDescription = "Product",
             modifier = Modifier
                 .size(60.dp)

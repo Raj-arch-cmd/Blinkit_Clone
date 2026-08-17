@@ -1,92 +1,46 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.withFrameNanos
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 import kotlin.math.ceil
 
-
-// ✅ THE FIX: Added the CartScreen route to your app's navigation graph.
-sealed class Screens(val route: String) {
-    object MainGraph : Screens("main_graph")
-    object PhoneAuthScreen : Screens("phone_auth")
-    object HomeScreen : Screens("home")
-    object CategoryScreen : Screens("category")
-    object OrderAgainScreen : Screens("order_again")
-    object PrintScreen : Screens("print")
-    object ProfileScreen : Screens("profile")
-    object AddressScreen : Screens("address")
-    object FavoritesScreen : Screens("favorites")
-    object PaymentsScreen : Screens("payments")
-    object OrdersScreen : Screens("orders")
-    object CartScreen : Screens("cart")
-    object ProductScreen : Screens("product") // Assuming a product detail screen
-    object VerticalTabProductsScreen : Screens("vertical_tab_products")
-    object FinalCheckOutScreen : Screens("final_checkout")
-    object SearchBarScreen : Screens("search") // New route
-}
-
-
-
 @Composable
-fun AutoScrollingProductCarousel(navController: NavHostController) {
-
+fun AutoScrollingProductCarousel(
+    speed: Float = 0.8f,
+    spacing: Dp = 12.dp
+) {
     val products = remember {
         listOf(
-            ProductItemAutoScroll(imageRes = R.drawable.milk, name = "Milk"),
-            ProductItemAutoScroll(imageRes = R.drawable.tea, name = "Tea"),
-            ProductItemAutoScroll(imageRes = R.drawable.kitkat, name = "KitKat"),
-            ProductItemAutoScroll(imageRes = R.drawable.choclate, name = "Chocolate"),
-            ProductItemAutoScroll(imageRes = R.drawable.dryfruits, name = "Dry Fruits"),
-            ProductItemAutoScroll(imageRes = R.drawable.potato, name = "Potato"),
-            ProductItemAutoScroll(imageRes = R.drawable.brocli, name = "Broccoli"),
-            ProductItemAutoScroll(imageRes = R.drawable.fruitsandvegetables, name = "Fruits & Veg"),
-            ProductItemAutoScroll(imageRes = R.drawable.instantfood, name = "Instant Food"),
+            ProductItemAutoScroll(R.drawable.milk, "Milk"),
+            ProductItemAutoScroll(R.drawable.tea, "Tea"),
+            ProductItemAutoScroll(R.drawable.kitkat, "KitKat"),
+            ProductItemAutoScroll(R.drawable.choclate, "Chocolate"),
+            ProductItemAutoScroll(R.drawable.dryfruits, "Dry Fruits"),
+            ProductItemAutoScroll(R.drawable.potato, "Potato"),
+            ProductItemAutoScroll(R.drawable.brocli, "Broccoli"),
+            ProductItemAutoScroll(R.drawable.fruitsandvegetables, "Fruits"),
+            ProductItemAutoScroll(R.drawable.instantfood, "Instant"),
         )
     }
 
-    val scrollSpeed = 1.5f
-    val spacing = 8.dp
-
     AutoScrollingHorizontalColumn(
         products = products,
-        speed = scrollSpeed,
-        spacing = spacing,
-        navController = navController
+        speed = speed,
+        spacing = spacing
     )
 }
 
@@ -94,49 +48,45 @@ fun AutoScrollingProductCarousel(navController: NavHostController) {
 fun AutoScrollingHorizontalColumn(
     products: List<ProductItemAutoScroll>,
     speed: Float,
-    spacing: Dp,
-    navController: NavHostController
+    spacing: Dp
 ) {
     val scrollOffset = remember { mutableFloatStateOf(0f) }
-
-    val itemWidth = 100.dp
+    val itemWidth = 110.dp
     val density = LocalDensity.current
     val itemWidthPx = with(density) { itemWidth.toPx() }
     val spacingPx = with(density) { spacing.toPx() }
     val totalItemWidthPx = itemWidthPx + spacingPx
 
-    val repeatedProducts = remember {
-        List(5) { products }.flatten()
-    }
-
     val itemsPerColumn = 3
-    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val configuration = LocalConfiguration.current
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
-    val resetValue = products.size * totalItemWidthPx / itemsPerColumn
+    val repeatedProducts = remember { List(10) { products }.flatten() }
 
-    LaunchedEffect(resetValue) {
-        val startTime = System.nanoTime()
+    LaunchedEffect(Unit) {
         while (true) {
-            withFrameNanos { frameTime ->
-                val elapsedMillis = (frameTime - startTime) / 1_000_000
-                scrollOffset.floatValue = (elapsedMillis * speed / 16f) % resetValue
+            withFrameNanos { _ ->
+                scrollOffset.floatValue += speed
             }
         }
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         val columnCount = ceil(repeatedProducts.size.toFloat() / itemsPerColumn).toInt()
+        val totalWidth = columnCount * totalItemWidthPx
 
         for (col in 0 until columnCount) {
-            val xOffset = col * totalItemWidthPx - scrollOffset.floatValue
+            val baseOffset = col * totalItemWidthPx
+            val xOffset = (baseOffset - scrollOffset.floatValue) % totalWidth
+            
+            val finalX = if (xOffset < -totalItemWidthPx) xOffset + totalWidth else xOffset
 
-            if (xOffset > -totalItemWidthPx * 2 && xOffset < screenWidthPx + totalItemWidthPx * 2) {
+            if (finalX > -totalItemWidthPx * 2 && finalX < screenWidthPx + totalItemWidthPx) {
                 Column(
                     modifier = Modifier
-                        .graphicsLayer {
-                            translationX = xOffset
-                        }
-                        .width(itemWidth),
+                        .graphicsLayer { translationX = finalX }
+                        .width(itemWidth)
+                        .padding(top = if (col % 2 == 0) 0.dp else 40.dp),
                     verticalArrangement = Arrangement.spacedBy(spacing)
                 ) {
                     for (row in 0 until itemsPerColumn) {
@@ -146,27 +96,6 @@ fun AutoScrollingHorizontalColumn(
                 }
             }
         }
-
-        Button(
-            onClick = {
-                navController.navigate(Screens.HomeScreen.route) {
-                    popUpTo(Screens.PhoneAuthScreen.route) { inclusive = true }
-                    launchSingleTop = true
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(vertical = 20.dp, horizontal = 12.dp)
-                .clip(CircleShape)
-                .size(width = 80.dp, height = 35.dp),
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White.copy(alpha = 0.8f),
-                contentColor = Color.DarkGray
-            )
-        ) {
-            Text(text = "Skip")
-        }
     }
 }
 
@@ -174,36 +103,21 @@ fun AutoScrollingHorizontalColumn(
 fun ProductCardForAutoScroll(product: ProductItemAutoScroll) {
     Card(
         modifier = Modifier
-            .size(100.dp)
-            .padding(2.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.simpleProductColor))
+            .size(110.dp)
+            .padding(4.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = product.imageRes),
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            AsyncImage(
+                model = product.imageRes,
                 contentDescription = product.name,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
+                modifier = Modifier.fillMaxSize().padding(12.dp),
                 contentScale = ContentScale.Fit
             )
         }
     }
 }
 
-
-data class ProductItemAutoScroll(
-    val imageRes: Int,
-    val name: String
-)
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAutoScrollingProductCarousel() {
-    AutoScrollingProductCarousel(navController = rememberNavController())
-}
-
+data class ProductItemAutoScroll(val imageRes: Int, val name: String)

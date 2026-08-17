@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.presentation.screens
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +20,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
 import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
-import com.example.projectnew.presentation.screens.PhoneAuthScreen
 
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -60,7 +59,7 @@ fun AppNavigation(
         }
 
         composable(Screens.MainGraph.route) {
-            val listState = rememberLazyListState()
+            val listState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
             var isVisible by remember { mutableStateOf(true) }
             LaunchedEffect(listState) {
                 var lastIndex = 0

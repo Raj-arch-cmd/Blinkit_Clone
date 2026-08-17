@@ -1,7 +1,6 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.data.model.ProductItem
 import com.example.blinkit_clone.presentation.components.QuantitySelector
@@ -39,33 +39,35 @@ fun ProductCard(
             .fillMaxWidth()
             .clickable { /* Navigate to product detail if needed */ },
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.4f)),
+        border = BorderStroke(0.5.dp, Color.LightGray.copy(alpha = 0.5f)),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
-            Image(
-                painter = painterResource(id = product.imageRes),
+            AsyncImage(
+                model = product.imageRes,
                 contentDescription = product.name,
                 modifier = Modifier
                     .height(90.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Fit
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = product.name,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 maxLines = 2,
-                minLines = 2 // Ensures consistent height
+                minLines = 2,
+                lineHeight = 16.sp
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -73,17 +75,18 @@ fun ProductCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.defaultMinSize(minHeight = 48.dp) // Ensures this row has space even if prices wrap
+                modifier = Modifier.defaultMinSize(minHeight = 40.dp)
             ) {
                 Text(
-                    text = String.format("₹%.2f", product.price),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    text = String.format("₹%.0f", product.price),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 14.sp,
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = String.format("₹%.2f", product.mrp),
-                    fontSize = 12.sp,
+                    text = String.format("₹%.0f", product.mrp),
+                    fontSize = 11.sp,
                     color = Color.Gray,
                     textDecoration = TextDecoration.LineThrough
                 )
@@ -94,7 +97,7 @@ fun ProductCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(40.dp), // Set a fixed height for the container
+                    .height(36.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (itemQuantity == 0) {
@@ -102,10 +105,14 @@ fun ProductCard(
                         onClick = onAdd,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8E479).copy(alpha = 0.5f)),
-                        border = BorderStroke(1.dp, Color(0xFF0E8A44))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF0E8A44)
+                        ),
+                        border = BorderStroke(1.dp, Color(0xFF0E8A44).copy(alpha = 0.7f)),
+                        contentPadding = PaddingValues(0.dp)
                     ) {
-                        Text("ADD", color = Color(0xFF0E8A44), fontWeight = FontWeight.Bold)
+                        Text("ADD", fontSize = 13.sp, fontWeight = FontWeight.ExtraBold)
                     }
                 } else {
                     QuantitySelector(

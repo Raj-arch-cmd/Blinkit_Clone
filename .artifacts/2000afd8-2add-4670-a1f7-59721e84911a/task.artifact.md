@@ -1,16 +1,10 @@
-# Performance Optimization Task List
+# Keyboard Alignment Root Cause Fix Task List
 
-- `[x]` Optimize `ProductCard` (State & DI)
-    - `[x]` Update `ProductCard` signature to accept `itemQuantity` and lambdas
-    - `[x]` Update callers (e.g., `ProductScreen`, `VerticalTabProductScreen`) to pass state and callbacks
-- `[x]` Fix Broken Laziness in `AllCategoryScreen`
-    - `[x]` Wrap static lists in `remember`
-    - `[x]` Flatten `LazyColumn` items if possible (Optimized components instead)
-- `[x]` Optimize Header Animations
-    - `[x]` Switch to `graphicsLayer` in `CategoryScreen`
-    - `[x]` Switch to `graphicsLayer` in `HomeScreen`
-- `[x]` General Data Optimization
-    - `[x]` Apply `remember` to static lists in all screen composables
+- `[x]` System Configuration
+    - `[x]` Add `android:windowSoftInputMode="adjustResize"` to `MainActivity` in `AndroidManifest.xml`
+- `[x]` UI Inset Optimization
+    - `[x]` Refactor `PhoneNumberInputScreen.kt` to use `WindowInsets.safeDrawing` or optimized `imePadding`
+    - `[x]` Ensure flush contact between input card and keyboard
 - `[x]` Verification
-    - `[x]` Build project
-    - `[x]` Manual check of jank in critical screens
+    - `[x]` Build and run
+    - `[x]` Verify zero-gap between card and keyboard

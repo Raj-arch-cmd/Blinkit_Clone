@@ -1,36 +1,35 @@
-package com.example.blinkit_clone.presentation.CategoryScreen
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.BestSellerComponent
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.BestSellerData
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.SimpleProductCard
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.SimpleProductItem
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 
 
 @Composable
-fun AllCategoryScreen(navController: NavHostController) {
+fun AllCategoryScreen(
+    navController: NavHostController,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
+) {
     //BestSeller Cards
     val categoryList = remember {
         listOf<BestSellerData>(
@@ -147,108 +146,92 @@ fun AllCategoryScreen(navController: NavHostController) {
             )
         )
     }
-    Column(
-        modifier = Modifier.fillMaxSize()
+    LazyVerticalGrid(
+        state = listState,
+        columns = GridCells.Fixed(12),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 80.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            // Background banner image
-            Image(
-                painter = painterResource(id = R.drawable.allwinterbanner),
-                contentDescription = "All winter banner",
+        item(span = { GridItemSpan(12) }) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-            )
+                    .fillMaxWidth()
+            ) {
+                // Background banner image
+                AsyncImage(
+                    model = R.drawable.allwinterbanner,
+                    contentDescription = "All winter banner",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
         }
-        Column(modifier = Modifier.fillMaxWidth()) {
+
+        item(span = { GridItemSpan(12) }) {
             Text(
                 text = "Bestsellers",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                modifier = Modifier.fillMaxWidth().height(350.dp),
-                content = {
-                    items(categoryList) { works ->
-                        BestSellerComponent(works = works,navController = navController)
-                    }
-                }
-            )
+        }
+
+        items(categoryList, span = { GridItemSpan(4) }) { works ->
+            BestSellerComponent(works = works, navController = navController)
+        }
+
+        item(span = { GridItemSpan(12) }) {
             Text(
                 text = "Grocery & Kitchen",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                modifier = Modifier.fillMaxWidth().height(300.dp),
-                content = {
-                    items(simpleProductItems) { items ->
-                        SimpleProductCard(product = items,navController)
-                    }
-                }
-            )
+        }
+
+        items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
+            SimpleProductCard(product = items, navController = navController)
+        }
+
+        item(span = { GridItemSpan(12) }) {
             Text(
                 text = "Snacks & Drinks",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                modifier = Modifier.fillMaxWidth().height(300.dp),
-                content = {
-                    items(simpleProductItems) { items ->
-                        SimpleProductCard(product = items,navController)
-                    }
-                }
-            )
+        }
+
+        items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
+            SimpleProductCard(product = items, navController = navController)
+        }
+
+        item(span = { GridItemSpan(12) }) {
             Text(
                 text = "Beauty & Personal Care",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                modifier = Modifier.fillMaxWidth().height(300.dp),
-                content = {
-                    items(simpleProductItems) { items ->
-                        SimpleProductCard(product = items,navController)
-                    }
-                }
-            )
+        }
+
+        items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
+            SimpleProductCard(product = items, navController = navController)
+        }
+
+        item(span = { GridItemSpan(12) }) {
             Text(
                 text = "Household Essentials",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            LazyVerticalGrid(
-                userScrollEnabled = false,
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                modifier = Modifier.fillMaxWidth().height(135.dp),
-                content = {
-                    items(simpleProductItems) { items ->
-                        SimpleProductCard(product = items,navController)
-                    }
-                }
-            )
         }
-        Spacer(modifier = Modifier.height(50.dp))
+
+        items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
+            SimpleProductCard(product = items, navController = navController)
+        }
     }
 }

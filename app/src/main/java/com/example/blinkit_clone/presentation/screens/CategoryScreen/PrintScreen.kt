@@ -7,9 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -47,7 +45,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
-fun PrintScreen(navController: NavHostController, listState: LazyListState) {
+fun PrintScreen(navController: NavHostController, listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()) {
 
     // Derive scroll value from LazyListState
     val firstVisibleItemScrollOffset by remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
@@ -166,12 +164,13 @@ fun PrintScreen(navController: NavHostController, listState: LazyListState) {
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
+        state = listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
             item {
                 Column(
                     modifier = Modifier
@@ -480,6 +479,6 @@ fun DoorStepImage() {
 @Composable
 fun PrintScreenPreview() {
     val navController = rememberNavController()
-    val listState = rememberLazyListState()
+    val listState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
     PrintScreen(navController = navController, listState = listState)
 }

@@ -1,6 +1,5 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 
 // Data class to hold information for the component
@@ -63,12 +63,12 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (works.imageResids.isNotEmpty()) {
-                                Image(painter = painterResource(id = works.imageResids[0]), contentDescription = null, modifier = Modifier.weight(1f))
+                                AsyncImage(model = works.imageResids[0], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
                             if (works.imageResids.size > 1) {
-                                Image(painter = painterResource(id = works.imageResids[1]), contentDescription = null, modifier = Modifier.weight(1f))
+                                AsyncImage(model = works.imageResids[1], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
@@ -78,12 +78,12 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (works.imageResids.size > 2) {
-                                Image(painter = painterResource(id = works.imageResids[2]), contentDescription = null, modifier = Modifier.weight(1f))
+                                AsyncImage(model = works.imageResids[2], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
                             if (works.imageResids.size > 3) {
-                                Image(painter = painterResource(id = works.imageResids[3]), contentDescription = null, modifier = Modifier.weight(1f))
+                                AsyncImage(model = works.imageResids[3], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }

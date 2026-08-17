@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.presentation.screens.CategoryScreens
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 
 import androidx.compose.foundation.background
@@ -32,7 +32,7 @@ import com.example.blinkit_clone.presentation.screens.CategoryScreen.ProductCard
 @Composable
 fun OrderAgainScreen(
     navController: NavHostController,
-    listState: LazyListState,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     cartViewModel: CartViewModel,
     // ✅ THE FIX: Inject the new ViewModel for this screen
     orderAgainViewModel: OrderAgainViewModel = hiltViewModel()
@@ -49,6 +49,7 @@ fun OrderAgainScreen(
         }
     ) { innerPadding ->
         LazyVerticalGrid(
+            state = listState,
             columns = GridCells.Fixed(3),
             modifier = Modifier
                 .fillMaxSize()
@@ -79,33 +80,7 @@ fun OrderAgainScreen(
                     navController = navController
                 )
             }
-
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                // Your footer code remains here
-            }
         }
-    }
-}
-
-
-// Dummy TopAppBar for preview purposes, as the original is complex
-@Composable
-private fun OrderAgainTopBar() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF6F6A1E), // Darker gold
-                        Color(0xFF9FAD4C)  // Medium amber gold
-                    )
-                )
-            )
-            .padding(16.dp)
-    ) {
-        Text("Grocery in 10 minutes", color = Color.White, fontWeight = FontWeight.Bold)
-        BlinkitSearchBar()
     }
 }
 
@@ -114,7 +89,7 @@ private fun OrderAgainTopBar() {
 @Composable
 fun OrderAgainScreenPreview() {
     val navController = rememberNavController()
-    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    val listState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
     val cartViewModel: CartViewModel = hiltViewModel()
     OrderAgainScreen(
         navController = navController,

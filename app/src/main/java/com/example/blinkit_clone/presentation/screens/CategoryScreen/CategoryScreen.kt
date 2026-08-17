@@ -46,12 +46,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.blinkit_clone.presentation.CategoryScreen.AllCategoryScreen
 import com.example.blinkit_clone.R
 
 
 @Composable
-fun CategoryScreen(navController: NavHostController,listState: LazyListState){
+fun CategoryScreen(
+    navController: NavHostController,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState
+){
 
     // Derive scroll value from LazyListState
     val firstVisibleItemScrollOffset by remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
@@ -109,16 +111,18 @@ fun CategoryScreen(navController: NavHostController,listState: LazyListState){
                     ) {
                         Column {
                             Text(
-                                text = "Grocery in",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black.copy(alpha = 0.7f)
+                                text = "DELIVERY IN",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black.copy(alpha = 0.6f),
+                                letterSpacing = 0.5.sp
                             )
                             Text(
                                 text = "10 minutes",
                                 fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontWeight = FontWeight.Black,
+                                color = Color.Black,
+                                lineHeight = 24.sp
                             )
                         }
 
@@ -143,18 +147,22 @@ fun CategoryScreen(navController: NavHostController,listState: LazyListState){
                     // Location Row
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     ) {
                         Text(
                             text = "Biharipura, Vijay Nagar, Bhim Nagar, Vijay",
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
                             color = Color.Black.copy(alpha = 0.8f),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Expand",
-                            tint = Color.Black
+                            tint = Color.Black,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
@@ -163,14 +171,12 @@ fun CategoryScreen(navController: NavHostController,listState: LazyListState){
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            item {
-                AllCategoryScreen(navController)
-            }
+            AllCategoryScreen(navController, listState = listState)
         }
     }
 }

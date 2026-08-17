@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.presentation.screens
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -22,23 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.*
-import com.example.blinkit_clone.presentation.screens.CategoryScreens.OrderAgainScreen
 import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 import com.example.blinkit_clone.presentation.screens.cart.CartScreen
+import com.example.blinkit_clone.presentation.screens.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     isVisible: Boolean,
-    listState: LazyListState,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     viewModel: PhoneAuthViewModel,
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
@@ -114,7 +111,7 @@ fun MainScreen(
                 )
             }
             composable(Screens.PrintScreen.route) {
-                PrintScreen(navController = bottomBarNavController, listState = listState)
+                PrintScreen(navController = bottomBarNavController)
             }
             composable(Screens.ProfileScreen.route) {
                 BlinkitProfileScreen(
@@ -138,6 +135,18 @@ fun MainScreen(
                     cartViewModel = cartViewModel
                 )
             }
+            composable(Screens.ProductScreen.route) {
+                ProductScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+            }
+            composable(Screens.VerticalTabProductsScreen.route) {
+                VerticalTabProductsScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+            }
+            composable(Screens.SearchBarScreen.route) {
+                SearchBarScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+            }
+            composable(Screens.FinalCheckOutScreen.route) {
+                FinalCheckOutScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+            }
         }
     }
 }
@@ -158,29 +167,30 @@ fun BottomNavigationBar(navController: NavHostController) {
 
     NavigationBar(
         modifier = Modifier
-            .height(95.dp)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .height(72.dp),
         containerColor = Color.White,
-        tonalElevation = 8.dp
+        tonalElevation = 4.dp
     ) {
         items.forEach { item ->
+            val isSelected = currentRoute == item.route
             NavigationBarItem(
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 label = {
                     Text(
                         text = item.title,
+                        fontSize = 11.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                selected = currentRoute == item.route,
+                selected = isSelected,
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
@@ -198,7 +208,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     selectedTextColor = Color(0xFF0E8A44),
                     unselectedIconColor = Color.Gray,
                     unselectedTextColor = Color.Gray,
-                    indicatorColor = Color(0xFFC8E6C9).copy(alpha = 0.5f)
+                    indicatorColor = Color(0xFFC8E6C9).copy(alpha = 0.3f)
                 )
             )
         }

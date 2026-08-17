@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.blinkit_clone.presentation.screens.AppNavigation
+import com.example.blinkit_clone.presentation.screens.CategoryScreen.AppNavigation
 
 
 import com.example.blinkit_clone.ui.theme.Blinkit_CloneTheme

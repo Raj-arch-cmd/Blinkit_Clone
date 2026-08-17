@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.presentation.screens
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
@@ -14,7 +14,6 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -35,25 +34,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.blinkit_clone.R
-
-import com.example.blinkit_clone.presentation.CategoryScreen.AllCategoryScreen
-import com.example.blinkit_clone.presentation.CategoryScreen.SummerCategoryScreen
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.BlinkItTabRow
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.BlinkitSearchBar
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
-import com.example.blinkit_clone.presentation.screens.CategoryScreen.getCategoryGradient
-
-// ✅ THE FIX: Added the missing data class definition.
-data class BlinkItCategoryData(
-    val title: String,
-    @DrawableRes val icon: Int
-)
+// ✅ THE FIX: The entire app is now controlled by our new AppNavigation.
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    listState: LazyListState
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState
 ) {
 
     val categories = remember {
@@ -118,16 +108,18 @@ fun HomeScreen(
                     ) {
                         Column {
                             Text(
-                                text = "Grocery in",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black.copy(alpha = 0.7f)
+                                text = "DELIVERY IN",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black.copy(alpha = 0.6f),
+                                letterSpacing = 0.5.sp
                             )
                             Text(
                                 text = "10 minutes",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.Black,
+                                lineHeight = 24.sp
                             )
                         }
                         Box(
@@ -150,18 +142,22 @@ fun HomeScreen(
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
                     ) {
                         Text(
                             text = "Biharipura, Vijay Nagar, Bhim Nagar, Vijay",
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
                             color = Color.Black.copy(alpha = 0.8f),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Expand",
-                            tint = Color.Black
+                            tint = Color.Black,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
@@ -174,36 +170,31 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            state = listState,
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(innerPadding)
         ) {
-            item {
-                AnimatedContent(
-                    targetState = selectedTabIndex,
-                    transitionSpec = {
-                        if (targetState > initialState) {
-                            slideInHorizontally { width -> width } + fadeIn() with
-                                    slideOutHorizontally { width -> -width } + fadeOut()
-                        } else {
-                            slideInHorizontally { width -> -width } + fadeIn() with
-                                    slideOutHorizontally { width -> width } + fadeOut()
-                        }
-                    },
-                    label = "SlideTabTransition"
-                ) { index ->
-                    // ✅ THE FIX: Added cases for your new screens.
-                    when (index) {
-                        0 -> AllCategoryScreen(navController)
-                        1 -> SummerCategoryScreen(navController)
-                        2 -> ElectronicsScreen(navController)
-                        3 -> BeautyScreen(navController) // Assuming you created BeautyScreen.kt
-                        4 -> KidsScreen(navController)    // Assuming you created KidsScreen.kt
-                        else -> AllCategoryScreen(navController)
+            AnimatedContent(
+                targetState = selectedTabIndex,
+                transitionSpec = {
+                    if (targetState > initialState) {
+                        slideInHorizontally { width -> width } + fadeIn() with
+                                slideOutHorizontally { width -> -width } + fadeOut()
+                    } else {
+                        slideInHorizontally { width -> -width } + fadeIn() with
+                                slideOutHorizontally { width -> width } + fadeOut()
                     }
+                },
+                label = "SlideTabTransition"
+            ) { index ->
+                when (index) {
+                    0 -> AllCategoryScreen(navController, listState = listState)
+                    1 -> SummerCategoryScreen(navController, listState = listState)
+                    2 -> ElectronicsScreen(navController, listState = listState)
+                    3 -> BeautyScreen(navController, listState = listState)
+                    4 -> KidsScreen(navController, listState = listState)
+                    else -> AllCategoryScreen(navController, listState = listState)
                 }
             }
         }

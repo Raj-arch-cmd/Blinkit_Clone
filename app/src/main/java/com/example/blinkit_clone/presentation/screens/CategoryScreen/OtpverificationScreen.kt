@@ -1,4 +1,4 @@
-package com.example.blinkit_clone.presentation.screens
+package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

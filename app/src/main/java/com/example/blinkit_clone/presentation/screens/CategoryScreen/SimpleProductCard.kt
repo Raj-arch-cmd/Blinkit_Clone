@@ -1,7 +1,6 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,12 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 
 
@@ -47,12 +47,13 @@ fun SimpleProductCard(product: SimpleProductItem, navController: NavHostControll
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.simpleProductColor))
         ) {
-            Image(
-                painter = painterResource(id = product.imageRes),
+            AsyncImage(
+                model = product.imageRes,
                 contentDescription = null,
                 modifier = Modifier
                     .size(70.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
+                contentScale = ContentScale.Fit
             )
         }
 

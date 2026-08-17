@@ -1,23 +1,16 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.blinkit_clone.Utills.CartViewModel
-import com.example.blinkit_clone.presentation.screens.CategoryScreens.OrderAgainScreen
-import com.example.blinkit_clone.presentation.screens.HomeScreen
-
-
-
-import com.example.projectnew.presentation.screens.PhoneAuthScreen
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    listState: LazyListState,
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
     NavHost(
