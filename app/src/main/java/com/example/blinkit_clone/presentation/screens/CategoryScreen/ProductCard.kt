@@ -37,7 +37,13 @@ fun ProductCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { /* Navigate to product detail if needed */ },
+            .clickable {
+                try {
+                    navController.navigate(Screens.ProductScreen.route)
+                } catch (e: Exception) {
+                    android.util.Log.e("ProductCard", "Navigation to product failed: ${e.message}")
+                }
+            },
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(0.5.dp, Color.LightGray.copy(alpha = 0.5f)),
         colors = CardDefaults.cardColors(containerColor = Color.White),

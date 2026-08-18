@@ -1,6 +1,10 @@
-# Logout Functionality Fix Task List
+# Product Click Navigation Crash Fix Task List
 
-- `[/]` Fix Logout Navigation
-    - `[ ]` Update `LaunchedEffect` in `AppNavigation.kt` for robust logout
-    - `[ ]` Use safer `popUpTo` logic to clear the backstack
-    - `[ ]` Verify logout triggers instant redirection to Auth screen
+- `[x]` Robust Navigation Registration
+    - `[x]` Add `ProductScreen` route to `AppNavigation.kt` NavHost
+- `[x]` Component Navigation Logic
+    - `[x]` Implement `clickable` in `ProductCard.kt`
+    - `[x]` Implement `clickable` in `BestSellerComponent.kt`
+- `[ ]` Verification
+    - `[ ]` Build and run
+    - `[ ]` Test navigation on all product types

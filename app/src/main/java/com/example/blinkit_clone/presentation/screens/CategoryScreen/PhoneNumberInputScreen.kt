@@ -1,9 +1,11 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -55,7 +57,6 @@ fun PhoneNumberInputScreen(
         visible = true
     }
 
-    // Root container doesn't use insets to allow carousel to go behind bars if needed
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,11 +86,44 @@ fun PhoneNumberInputScreen(
             )
         }
 
+        // ✅ THE SKIP BUTTON: Fixed positioning and visibility
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 12.dp, end = 16.dp), // Increased top spacing to stay clear of status bar icons
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Surface(
+                onClick = {
+                    Log.d("PhoneNumberInputScreen", "Skip clicked")
+                    navController.navigate(Screens.MainGraph.route) {
+                        popUpTo(Screens.PhoneAuthScreen.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                shape = CircleShape,
+                color = Color.Black.copy(alpha = 0.85f), // Darker background for high visibility
+                contentColor = Color.White,
+                tonalElevation = 4.dp
+            ) {
+                Text(
+                    text = "Skip",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 0.5.sp
+                )
+            }
+        }
+
         // 2. MAIN CONTENT
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding(), // ✅ Only handle status bar at top
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(screenHeight * 0.10f))
@@ -130,12 +164,8 @@ fun PhoneNumberInputScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             // 3. PHONE INPUT CONTAINER
-            // ✅ THE ROOT FIX: Apply ime and navigation bar padding ONLY here.
-            // Using consuming padding prevents child columns from adding it again.
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars)),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
                 color = Color.White,
                 shadowElevation = 24.dp

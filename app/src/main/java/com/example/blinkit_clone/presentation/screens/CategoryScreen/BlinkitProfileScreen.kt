@@ -1,5 +1,6 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -127,8 +128,12 @@ fun BlinkitProfileScreen(
                     title = "Log Out",
                     subtitle = "End your current session"
                 ) {
+                    Log.d("BlinkitProfileScreen", "Logout clicked")
                     viewModel.signOut()
                 }
+
+                // ✅ THE FIX: Increased spacer to 120dp to ensure Logout is clickable above BottomNav
+                Spacer(modifier = Modifier.height(120.dp))
             }
         }
     }

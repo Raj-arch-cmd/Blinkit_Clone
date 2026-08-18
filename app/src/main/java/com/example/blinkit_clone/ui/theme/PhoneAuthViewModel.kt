@@ -1,6 +1,7 @@
 package com.example.blinkit_clone.presentation.screens.auth
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.blinkit_clone.Common.AuthState
@@ -10,7 +11,9 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -26,13 +29,13 @@ class PhoneAuthViewModel @Inject constructor() : ViewModel() {
     private val _isUserLoggedIn = MutableStateFlow<Boolean?>(null)
     val isUserLoggedIn = _isUserLoggedIn.asStateFlow()
 
+    // ✅ THE FIX: One-shot event for explicit logout
+    private val _logoutEvent = MutableSharedFlow<Unit>()
+    val logoutEvent = _logoutEvent.asSharedFlow()
+
     private var verificationId: String? = null
 
     init {
-        // ✅ THE FIX: Comment out or delete this line to use real phone numbers.
-        // This line forces the app to use a local test environment.
-        // auth.useEmulator("10.0.2.2", 9099)
-
         checkCurrentUser()
     }
 
@@ -92,8 +95,15 @@ class PhoneAuthViewModel @Inject constructor() : ViewModel() {
     }
 
     fun signOut() {
+        Log.d("PhoneAuthViewModel", "SIGNOUT_CALLED")
         auth.signOut()
         _isUserLoggedIn.value = false
         _authState.value = AuthState.Initial
+        
+        // ✅ Emit one-shot logout event
+        viewModelScope.launch {
+            Log.d("PhoneAuthViewModel", "LOGOUT_EVENT_EMITTED")
+            _logoutEvent.emit(Unit)
+        }
     }
 }

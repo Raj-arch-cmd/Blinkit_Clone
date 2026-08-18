@@ -50,7 +50,13 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                         .fillMaxWidth()
                         .height(120.dp)
                         .padding(8.dp)
-                        .clickable { /* Handle navigation */ }
+                        .clickable {
+                            try {
+                                navController.navigate(Screens.ProductScreen.route)
+                            } catch (e: Exception) {
+                                android.util.Log.e("BestSellerComponent", "Navigation failed: ${e.message}")
+                            }
+                        }
                 ) {
                     // This grid is now safe. It checks if an image exists
                     // before trying to display it, which prevents crashes.

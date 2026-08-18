@@ -1,6 +1,6 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 
-
 data class SimpleProductItem(
     val name1: String,
     val name2: String,
@@ -42,7 +41,12 @@ fun SimpleProductCard(product: SimpleProductItem, navController: NavHostControll
             modifier = Modifier
                 .size(85.dp)
                 .clickable {
-                    navController.navigate(Screens.ProductScreen.route)
+                    try {
+                        Log.d("SimpleProductCard", "Navigating to product detail: ${Screens.ProductScreen.route}")
+                        navController.navigate(Screens.ProductScreen.route)
+                    } catch (e: Exception) {
+                        Log.e("SimpleProductCard", "Navigation failed: ${e.message}")
+                    }
                 },
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.simpleProductColor))

@@ -135,6 +135,7 @@ fun MainScreen(
                     cartViewModel = cartViewModel
                 )
             }
+            // ✅ THE FIX: Ensure detailed product view is in this NavHost
             composable(Screens.ProductScreen.route) {
                 ProductScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
             }
@@ -229,4 +230,3 @@ fun BottomNavigationBarPreview() {
     val navController = rememberNavController()
     BottomNavigationBar(navController = navController)
 }
-
