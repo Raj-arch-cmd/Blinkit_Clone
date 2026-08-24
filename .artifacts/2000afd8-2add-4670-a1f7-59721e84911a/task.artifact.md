@@ -1,12 +1,9 @@
-# Phase 3.2 Incremental Performance Task List
+# Launcher Icon Implementation Task List
 
-- `[x]` Phase 3.2 Execution
-    - `[x]` Remove elevation from Carousel Cards in `ProductAutoScrolling.kt`
-    - `[x]` Increase deferral delay to 600ms in `HomeScreen.kt`
-    - `[x]` Increase deferral delay to 600ms in `PhoneNumberInputScreen.kt`
-    - `[x]` Replace `painterResource` with `AsyncImage` in `PrintScreen.kt`
-    - `[x]` Replace `painterResource` with `AsyncImage` in `ProductScreen.kt`
-    - `[x]` Cleanup diagnostic logs
+- `[/]` Execution
+    - `[ ]` Define `blinkitYellow` in `colors.xml`
+    - `[ ]` Update `ic_launcher_background.xml` to use solid yellow
+    - `[ ]` Update `ic_launcher_foreground.xml` to center `blinkit_logo`
 - `[ ]` Verification
-    - `[ ]` Rebuild and Deploy
-    - `[ ]` Check Logcat for Davey duration reduction
+    - `[ ]` Run `./gradlew assembleDebug`
+    - `[ ]` Create walkthrough

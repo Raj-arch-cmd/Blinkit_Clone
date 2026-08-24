@@ -1,32 +1,36 @@
-# Phase 3.2 Performance Optimization Plan
+# Implementation Plan - Professional Launcher Icon
 
-This plan implements the final minimal fixes to eliminate the remaining 800ms startup stall and the synchronous decoding of large JPEGs on the main thread.
+This plan describes how to add a professional Android launcher icon to the Blinkit Clone project using the provided logo and following adaptive icon best practices.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The new icon will use the provided Blinkit logo on a solid yellow background (`#F7CB45`). This ensures the app looks professional and consistent with the Blinkit brand across all modern Android devices.
 
 ## Proposed Changes
 
-### 1. Carousel Simplification
-Remove high-cost rendering effects from the background carousel.
-- **[MODIFY] [ProductAutoScrolling.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/ProductAutoScrolling.kt)**:
-    - Set `elevation = 0.dp` for `ProductCardForAutoScroll`. Shadows on 15-27 items are extremely expensive for initial layout.
-    - Remove the diagnostic log lines once verified.
+### [Component] Resources
 
-### 2. Strategic Delay (Animation-First)
-Increase the loading deferral to ensure navigation animations finish before the CPU is hammered by image decodes.
-- **[MODIFY] [HomeScreen.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/HomeScreen.kt)**: Change `withFrameNanos` to `delay(600)`.
-- **[MODIFY] [PhoneNumberInputScreen.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/PhoneNumberInputScreen.kt)**: Change `withFrameNanos` to `delay(600)`.
+#### [MODIFY] [colors.xml](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/res/values/colors.xml)
+- Add `blinkitYellow` color resource with value `#F7CB45`.
 
-### 3. Kill Synchronous Decodes
-Replace `Image(painterResource)` with `AsyncImage` for all large assets to move their decoding to background threads.
-- **[MODIFY] [PrintScreen.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/PrintScreen.kt)**:
-    - Use `AsyncImage` for `fastdelivery.jpg`, `doorstep.jpg`, `form.jpg`, `passport.jpg`, and `rentform.jpg`.
-- **[MODIFY] [ProductScreen.kt](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/java/com/example/blinkit_clone/presentation/screens/CategoryScreen/ProductScreen.kt)**:
-    - Ensure the main product image uses `AsyncImage`.
+#### [MODIFY] [ic_launcher_background.xml](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/res/drawable/ic_launcher_background.xml)
+- Replace the existing vector path with a simple solid color using the new `blinkitYellow`.
+
+#### [MODIFY] [ic_launcher_foreground.xml](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/res/drawable/ic_launcher_foreground.xml)
+- Replace the existing vector data with a centered and scaled version of the `blinkit_logo` image.
+- The logo will be scaled to ensure it fits within the "safe zone" of the adaptive icon (center 66dp).
+
+### [Component] Manifest
+
+#### [MODIFY] [AndroidManifest.xml](file:///Users/rajsingh/AndroidStudioProjects/Blinkit_Clone/app/src/main/AndroidManifest.xml)
+- Ensure the `android:icon` and `android:roundIcon` correctly point to the adaptive icon resources. (Already configured, but I will verify).
 
 ## Verification Plan
 
+### Automated Tests
+- Run `./gradlew assembleDebug` to ensure no resource errors were introduced.
+
 ### Manual Verification
-- **Flow**: Login -> Skip -> Home.
-- **Metrics**:
-    - `Davey!` durations: Targeting <300ms.
-    - `SkJpegCodec`: Should only appear in background threads (not followed by `Davey!` logs).
-- **Visuals**: Navigation should be perfectly fluid. Images will fade in 600ms later.
+- Verify the icon appears correctly in the launcher (if I could run it on a device with a screen, but I will rely on the build success and visual logic).
+- Check that the `blinkit_logo` is properly centered and not clipped on rounded or squircle icon shapes.
