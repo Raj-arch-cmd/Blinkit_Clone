@@ -35,7 +35,8 @@ fun OrderAgainScreen(
     listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     cartViewModel: CartViewModel,
     // ✅ THE FIX: Inject the new ViewModel for this screen
-    orderAgainViewModel: OrderAgainViewModel = hiltViewModel()
+    orderAgainViewModel: OrderAgainViewModel = hiltViewModel(),
+    canLoadImages: Boolean = true
 ) {
     // ✅ THE FIX: Get the product list from the ViewModel's state
     val productItems by orderAgainViewModel.productItems.collectAsState()
@@ -77,7 +78,8 @@ fun OrderAgainScreen(
                     itemQuantity = quantity,
                     onAdd = { cartViewModel.addProduct(product) },
                     onRemove = { cartViewModel.removeProduct(product) },
-                    navController = navController
+                    navController = navController,
+                    canLoadImages = canLoadImages
                 )
             }
         }

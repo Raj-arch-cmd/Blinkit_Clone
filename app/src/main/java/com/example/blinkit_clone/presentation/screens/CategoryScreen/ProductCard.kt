@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.data.model.ProductItem
 import com.example.blinkit_clone.presentation.components.QuantitySelector
@@ -32,8 +35,11 @@ fun ProductCard(
     onAdd: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    canLoadImages: Boolean = true
 ) {
+    val context = LocalContext.current
+    
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -56,7 +62,12 @@ fun ProductCard(
         ) {
 
             AsyncImage(
-                model = product.imageRes,
+                model = if (canLoadImages) ImageRequest.Builder(context)
+                    .data(product.imageRes)
+                    .size(300) // Constrain size (px)
+                    .precision(Precision.INEXACT)
+                    .crossfade(true)
+                    .build() else null,
                 contentDescription = product.name,
                 modifier = Modifier
                     .height(90.dp)
@@ -186,4 +197,3 @@ fun ProductCardPreview() {
         }
     }
 }
-

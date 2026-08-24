@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +53,8 @@ import com.example.blinkit_clone.R
 @Composable
 fun CategoryScreen(
     navController: NavHostController,
-    listState: androidx.compose.foundation.lazy.grid.LazyGridState
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
+    canLoadImages: Boolean = true
 ){
 
     // Derive scroll value from LazyListState
@@ -95,12 +97,19 @@ fun CategoryScreen(
                     .padding(horizontal = 6.dp).shadow(elevation = 0.dp)
             ) {
                 // 🔸 SLIDING SECTION (Delivery info + location)
+                // ✅ THE FIX: Using layout modifier to avoid body recomposition when header height changes
                 Column(
                     modifier = Modifier
                         .graphicsLayer {
                             translationY = with(density) { -scrollOffset.value.dp.toPx() }
                         }
-                        .height(headerHeightDp.value)
+                        .layout { measurable, constraints ->
+                            val currentHeight = headerHeightDp.value.roundToPx()
+                            val placeable = measurable.measure(constraints.copy(minHeight = currentHeight, maxHeight = currentHeight))
+                            layout(constraints.maxWidth, currentHeight) {
+                                placeable.placeRelative(0, 0)
+                            }
+                        }
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 ) {
                     // Delivery Time Row
@@ -132,7 +141,7 @@ fun CategoryScreen(
                                 .size(40.dp)
                                 .clip(CircleShape)
                                 .background(color = Color.Black.copy(alpha = 0.5f)).clickable {
-                                    //Navigate to profile screen
+                                    navController.navigate(Screens.ProfileScreen.route)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -176,7 +185,7 @@ fun CategoryScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AllCategoryScreen(navController, listState = listState)
+            AllCategoryScreen(navController, listState = listState, canLoadImages = canLoadImages)
         }
     }
 }

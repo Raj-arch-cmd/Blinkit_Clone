@@ -29,6 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.presentation.screens.auth.PhoneAuthViewModel
 import kotlinx.coroutines.delay
@@ -52,6 +54,13 @@ fun PhoneNumberInputScreen(
         isLoading = false
     }
 
+    var canLoadImages by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        // ✅ THE FIX: Wait for activity launch before heavy decodes
+        delay(600)
+        canLoadImages = true
+    }
+
     LaunchedEffect(Unit) {
         delay(100)
         visible = true
@@ -69,7 +78,7 @@ fun PhoneNumberInputScreen(
                 .height(screenHeight * 0.55f)
                 .alpha(0.6f)
         ) {
-            AutoScrollingProductCarousel()
+            AutoScrollingProductCarousel(canLoadImages = canLoadImages)
             
             Box(
                 modifier = Modifier
@@ -111,8 +120,7 @@ fun PhoneNumberInputScreen(
                     text = "Skip",
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 0.5.sp
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -141,7 +149,12 @@ fun PhoneNumberInputScreen(
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFF7CB45))
                     ) {
                         AsyncImage(
-                            model = R.drawable.blinkit_logo,
+                            model = if (canLoadImages) ImageRequest.Builder(context)
+                                .data(R.drawable.blinkit_logo)
+                                .size(200) // Constrain logo size
+                                .precision(Precision.INEXACT)
+                                .crossfade(true)
+                                .build() else null,
                             contentDescription = "Blinkit Logo",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,9 +20,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
+import androidx.compose.runtime.Immutable
 import com.example.blinkit_clone.R
 
 // Data class to hold information for the component
+@Immutable
 data class BestSellerData(
     val title: String,
     val imageResids: List<Int>,
@@ -29,7 +34,13 @@ data class BestSellerData(
 )
 
 @Composable
-fun BestSellerComponent(works: BestSellerData, navController: NavHostController) {
+fun BestSellerComponent(
+    works: BestSellerData,
+    navController: NavHostController,
+    canLoadImages: Boolean = true
+) {
+    val context = LocalContext.current
+    
     Card(
         modifier = Modifier
             .size(width = 120.dp, height = 180.dp)
@@ -58,8 +69,6 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                             }
                         }
                 ) {
-                    // This grid is now safe. It checks if an image exists
-                    // before trying to display it, which prevents crashes.
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -69,12 +78,32 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (works.imageResids.isNotEmpty()) {
-                                AsyncImage(model = works.imageResids[0], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
+                                AsyncImage(
+                                    model = if (canLoadImages) ImageRequest.Builder(context)
+                                        .data(works.imageResids[0])
+                                        .size(150) // Explicitly request small size (px)
+                                        .precision(Precision.INEXACT)
+                                        .crossfade(true)
+                                        .build() else null,
+                                    contentDescription = null,
+                                    modifier = Modifier.weight(1f),
+                                    contentScale = ContentScale.Fit
+                                )
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
                             if (works.imageResids.size > 1) {
-                                AsyncImage(model = works.imageResids[1], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
+                                AsyncImage(
+                                    model = if (canLoadImages) ImageRequest.Builder(context)
+                                        .data(works.imageResids[1])
+                                        .size(150)
+                                        .precision(Precision.INEXACT)
+                                        .crossfade(true)
+                                        .build() else null,
+                                    contentDescription = null,
+                                    modifier = Modifier.weight(1f),
+                                    contentScale = ContentScale.Fit
+                                )
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
@@ -84,12 +113,32 @@ fun BestSellerComponent(works: BestSellerData, navController: NavHostController)
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (works.imageResids.size > 2) {
-                                AsyncImage(model = works.imageResids[2], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
+                                AsyncImage(
+                                    model = if (canLoadImages) ImageRequest.Builder(context)
+                                        .data(works.imageResids[2])
+                                        .size(150)
+                                        .precision(Precision.INEXACT)
+                                        .crossfade(true)
+                                        .build() else null,
+                                    contentDescription = null,
+                                    modifier = Modifier.weight(1f),
+                                    contentScale = ContentScale.Fit
+                                )
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
                             if (works.imageResids.size > 3) {
-                                AsyncImage(model = works.imageResids[3], contentDescription = null, modifier = Modifier.weight(1f), contentScale = ContentScale.Fit)
+                                AsyncImage(
+                                    model = if (canLoadImages) ImageRequest.Builder(context)
+                                        .data(works.imageResids[3])
+                                        .size(150)
+                                        .precision(Precision.INEXACT)
+                                        .crossfade(true)
+                                        .build() else null,
+                                    contentDescription = null,
+                                    modifier = Modifier.weight(1f),
+                                    contentScale = ContentScale.Fit
+                                )
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }

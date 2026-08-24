@@ -37,58 +37,25 @@ fun MainScreen(
     isVisible: Boolean,
     listState: androidx.compose.foundation.lazy.grid.LazyGridState,
     viewModel: PhoneAuthViewModel,
-    cartViewModel: CartViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    canLoadImages: Boolean = true
 ) {
     val bottomBarNavController = rememberNavController()
-    val totalItems by cartViewModel.totalItemCount.collectAsState(initial = 0)
-    val totalPrice by cartViewModel.totalPrice.collectAsState(initial = 0.0)
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(
-                visible = isVisible,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                BottomNavigationBar(navController = bottomBarNavController)
-            }
+            // ✅ THE FIX: Isolated isVisible to this wrapper to prevent MainScreen recomposition
+            BottomBarWrapper(
+                isVisible = isVisible,
+                navController = bottomBarNavController
+            )
         },
         floatingActionButton = {
-            AnimatedVisibility(
-                visible = totalItems > 0,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                FloatingActionButton(
-                    onClick = { bottomBarNavController.navigate(Screens.CartScreen.route) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    containerColor = Color(0xFF0E8A44)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "$totalItems item${if (totalItems > 1) "s" else ""} | ${String.format("₹%.2f", totalPrice)}",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = "View Cart",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-            }
+            // ✅ THE FIX: Isolated cartState collection to this wrapper
+            CartFabWrapper(
+                cartViewModel = cartViewModel,
+                navController = bottomBarNavController
+            )
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
@@ -98,16 +65,17 @@ fun MainScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screens.HomeScreen.route) {
-                HomeScreen(navController = bottomBarNavController, listState = listState)
+                HomeScreen(navController = bottomBarNavController, listState = listState, canLoadImages = canLoadImages)
             }
             composable(Screens.CategoryScreen.route) {
-                CategoryScreen(navController = bottomBarNavController, listState = listState)
+                CategoryScreen(navController = bottomBarNavController, listState = listState, canLoadImages = canLoadImages)
             }
             composable(Screens.OrderAgainScreen.route) {
                 OrderAgainScreen(
                     navController = bottomBarNavController,
                     listState = listState,
-                    cartViewModel = cartViewModel
+                    cartViewModel = cartViewModel,
+                    canLoadImages = canLoadImages
                 )
             }
             composable(Screens.PrintScreen.route) {
@@ -135,9 +103,8 @@ fun MainScreen(
                     cartViewModel = cartViewModel
                 )
             }
-            // ✅ THE FIX: Ensure detailed product view is in this NavHost
             composable(Screens.ProductScreen.route) {
-                ProductScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+                ProductScreen(navController = bottomBarNavController, cartViewModel = cartViewModel, canLoadImages = canLoadImages)
             }
             composable(Screens.VerticalTabProductsScreen.route) {
                 VerticalTabProductsScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
@@ -147,6 +114,65 @@ fun MainScreen(
             }
             composable(Screens.FinalCheckOutScreen.route) {
                 FinalCheckOutScreen(navController = bottomBarNavController, cartViewModel = cartViewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomBarWrapper(
+    isVisible: Boolean,
+    navController: NavHostController
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
+        BottomNavigationBar(navController = navController)
+    }
+}
+
+@Composable
+fun CartFabWrapper(
+    cartViewModel: CartViewModel,
+    navController: NavHostController
+) {
+    val totalItems by cartViewModel.totalItemCount.collectAsState(initial = 0)
+    val totalPrice by cartViewModel.totalPrice.collectAsState(initial = 0.0)
+
+    AnimatedVisibility(
+        visible = totalItems > 0,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
+        FloatingActionButton(
+            onClick = { navController.navigate(Screens.CartScreen.route) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(12.dp),
+            containerColor = Color(0xFF0E8A44)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "$totalItems item${if (totalItems > 1) "s" else ""} | ${String.format("₹%.2f", totalPrice)}",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = "View Cart",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
         }
     }

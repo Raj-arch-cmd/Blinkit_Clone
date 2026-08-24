@@ -16,20 +16,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 
 
 @Composable
 fun AllCategoryScreen(
     navController: NavHostController,
-    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState(),
+    canLoadImages: Boolean = true
 ) {
+    val context = LocalContext.current
+    
+    
     //BestSeller Cards
     val categoryList = remember {
         listOf<BestSellerData>(
@@ -161,7 +168,12 @@ fun AllCategoryScreen(
             ) {
                 // Background banner image
                 AsyncImage(
-                    model = R.drawable.allwinterbanner,
+                    model = if (canLoadImages) ImageRequest.Builder(context)
+                        .data(R.drawable.allwinterbanner)
+                        .size(1000) // Constrain large banner (px)
+                        .precision(Precision.INEXACT)
+                        .crossfade(true)
+                        .build() else null,
                     contentDescription = "All winter banner",
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.FillWidth
@@ -179,7 +191,7 @@ fun AllCategoryScreen(
         }
 
         items(categoryList, span = { GridItemSpan(4) }) { works ->
-            BestSellerComponent(works = works, navController = navController)
+            BestSellerComponent(works = works, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(12) }) {
@@ -192,7 +204,7 @@ fun AllCategoryScreen(
         }
 
         items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(12) }) {
@@ -205,7 +217,7 @@ fun AllCategoryScreen(
         }
 
         items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(12) }) {
@@ -218,7 +230,7 @@ fun AllCategoryScreen(
         }
 
         items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(12) }) {
@@ -231,7 +243,7 @@ fun AllCategoryScreen(
         }
 
         items(simpleProductItems, span = { GridItemSpan(3) }) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
     }
 }

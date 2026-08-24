@@ -16,18 +16,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 
 @Composable
 fun SummerCategoryScreen(
     navController: NavHostController,
-    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState(),
+    canLoadImages: Boolean = true
 ){
+    val context = LocalContext.current
 
     //Simple Product Cards
     val simpleProductItems = remember {
@@ -89,7 +94,12 @@ fun SummerCategoryScreen(
             ) {
                 // Background banner image
                 AsyncImage(
-                    model = R.drawable.summerbanner,
+                    model = if (canLoadImages) ImageRequest.Builder(context)
+                        .data(R.drawable.summerbanner)
+                        .size(1000)
+                        .precision(Precision.INEXACT)
+                        .crossfade(true)
+                        .build() else null,
                     contentDescription = "summer banner",
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.FillWidth
@@ -107,7 +117,7 @@ fun SummerCategoryScreen(
         }
 
         items(simpleProductItems.take(4)) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(4) }) {
@@ -120,7 +130,7 @@ fun SummerCategoryScreen(
         }
 
         items(simpleProductItems) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(4) }) {
@@ -133,7 +143,7 @@ fun SummerCategoryScreen(
         }
 
         items(simpleProductItems.take(4)) { items ->
-            SimpleProductCard(product = items, navController = navController)
+            SimpleProductCard(product = items, navController = navController, canLoadImages = canLoadImages)
         }
     }
 }

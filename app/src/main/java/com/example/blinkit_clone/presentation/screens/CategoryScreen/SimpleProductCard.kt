@@ -16,14 +16,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class SimpleProductItem(
     val name1: String,
     val name2: String,
@@ -31,7 +36,13 @@ data class SimpleProductItem(
 )
 
 @Composable
-fun SimpleProductCard(product: SimpleProductItem, navController: NavHostController) {
+fun SimpleProductCard(
+    product: SimpleProductItem,
+    navController: NavHostController,
+    canLoadImages: Boolean = true
+) {
+    val context = LocalContext.current
+    
     Column(
         modifier = Modifier.padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,7 +63,12 @@ fun SimpleProductCard(product: SimpleProductItem, navController: NavHostControll
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.simpleProductColor))
         ) {
             AsyncImage(
-                model = product.imageRes,
+                model = if (canLoadImages) ImageRequest.Builder(context)
+                    .data(product.imageRes)
+                    .size(200) // Constrain thumbnail size (px)
+                    .precision(Precision.INEXACT)
+                    .crossfade(true)
+                    .build() else null,
                 contentDescription = null,
                 modifier = Modifier
                     .size(70.dp)

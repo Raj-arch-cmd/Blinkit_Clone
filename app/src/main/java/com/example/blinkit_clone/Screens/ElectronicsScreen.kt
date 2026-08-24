@@ -1,6 +1,5 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,20 +14,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 
 @Composable
 fun ElectronicsScreen(
     navController: NavHostController,
-    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState(),
+    canLoadImages: Boolean = true
 ) {
+    val context = LocalContext.current
+    
     val categoryList = remember {
         listOf(
             BestSellerData("Mobiles & Accessories", listOf(R.drawable.mobiles, R.drawable.cableandchargers, R.drawable.powerbank, R.drawable.smartwatch), "+20 more"),
@@ -66,8 +71,13 @@ fun ElectronicsScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item(span = { GridItemSpan(12) }) {
-            Image(
-                painter = painterResource(id = R.drawable.electronics_banner),
+            AsyncImage(
+                model = if (canLoadImages) ImageRequest.Builder(context)
+                    .data(R.drawable.electronics_banner)
+                    .size(1000)
+                    .precision(Precision.INEXACT)
+                    .crossfade(true)
+                    .build() else null,
                 contentDescription = "Electronics Banner",
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.FillWidth
@@ -84,7 +94,7 @@ fun ElectronicsScreen(
         }
 
         items(categoryList, span = { GridItemSpan(4) }) { item ->
-            BestSellerComponent(works = item, navController = navController)
+            BestSellerComponent(works = item, navController = navController, canLoadImages = canLoadImages)
         }
 
         item(span = { GridItemSpan(12) }) {
@@ -97,7 +107,7 @@ fun ElectronicsScreen(
         }
 
         items(simpleProductItems, span = { GridItemSpan(3) }) { item ->
-            SimpleProductCard(product = item, navController = navController)
+            SimpleProductCard(product = item, navController = navController, canLoadImages = canLoadImages)
         }
     }
 }

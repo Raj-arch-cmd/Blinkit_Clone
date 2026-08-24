@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -41,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.blinkit_clone.R
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
+import coil.compose.AsyncImage
 
 @Composable
 fun PrintScreen(navController: NavHostController, listState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()) {
@@ -245,8 +244,8 @@ fun PrintingServiceCards() {
                     modifier = Modifier.padding(vertical = 20.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.form),
+                    AsyncImage(
+                        model = R.drawable.form,
                         contentDescription = "Document icon",
                         modifier = Modifier.size(120.dp),
                         contentScale = ContentScale.Fit
@@ -288,8 +287,8 @@ fun PrintingServiceCards() {
                     modifier = Modifier.padding(vertical = 20.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.passport),
+                    AsyncImage(
+                        model = R.drawable.passport,
                         contentDescription = "Document icon",
                         modifier = Modifier.size(120.dp),
                         contentScale = ContentScale.Fit
@@ -344,8 +343,8 @@ fun PrintRentReceiptScreen() {
         ) {
             Box {
                 // Image
-                Image(
-                    painter = painterResource(id = R.drawable.rentform),
+                AsyncImage(
+                    model = R.drawable.rentform,
                     contentDescription = "Rent Receipt",
                     modifier = Modifier
                         .fillMaxSize()
@@ -452,8 +451,8 @@ fun PrintRentReceiptScreen() {
 
 @Composable
 fun PrintGuidelinesImage() {
-    Image(
-        painter = painterResource(id = R.drawable.fastdelivery),
+    AsyncImage(
+        model = R.drawable.fastdelivery,
         contentDescription = "Print Guidelines",
         modifier = Modifier
             .fillMaxWidth()
@@ -465,8 +464,8 @@ fun PrintGuidelinesImage() {
 
 @Composable
 fun DoorStepImage() {
-    Image(
-        painter = painterResource(id = R.drawable.doorstep),
+    AsyncImage(
+        model = R.drawable.doorstep,
         contentDescription = "Print Guidelines",
         modifier = Modifier
             .fillMaxWidth()

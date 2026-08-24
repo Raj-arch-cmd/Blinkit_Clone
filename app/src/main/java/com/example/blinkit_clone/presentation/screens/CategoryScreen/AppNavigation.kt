@@ -68,6 +68,14 @@ fun AppNavigation(
         composable(Screens.MainGraph.route) {
             val listState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
             var isVisible by remember { mutableStateOf(true) }
+            
+            // ✅ THE FIX: Defer heavy MainScreen image loading to keep navigation smooth
+            var canLoadImages by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(600)
+                canLoadImages = true
+            }
+
             LaunchedEffect(listState) {
                 var lastIndex = 0
                 var lastScrollOffset = 0
@@ -89,7 +97,8 @@ fun AppNavigation(
             MainScreen(
                 isVisible = isVisible,
                 listState = listState,
-                viewModel = viewModel
+                viewModel = viewModel,
+                canLoadImages = canLoadImages
             )
         }
     }

@@ -1,5 +1,8 @@
 package com.example.blinkit_clone.data.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class ProductItem(
     val imageRes: Int,
     val name: String,

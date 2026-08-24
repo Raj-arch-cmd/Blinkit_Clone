@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -37,13 +38,13 @@ import com.example.blinkit_clone.R
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.BlinkItTabRow
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.BlinkitSearchBar
 import com.example.blinkit_clone.presentation.screens.CategoryScreen.Screens
-// ✅ THE FIX: The entire app is now controlled by our new AppNavigation.
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    listState: androidx.compose.foundation.lazy.grid.LazyGridState
+    listState: androidx.compose.foundation.lazy.grid.LazyGridState,
+    canLoadImages: Boolean = true
 ) {
 
     val categories = remember {
@@ -57,6 +58,15 @@ fun HomeScreen(
     }
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    
+    // ✅ THE FIX: Defer image loading until after the first frame/navigation transition
+    var canLoadImages by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        // ✅ THE FIX: Wait for navigation animation to finish before starting heavy decodes
+        kotlinx.coroutines.delay(600) 
+        canLoadImages = true
+    }
+
     val firstVisibleItemScrollOffset by remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
     val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val isScrolled by remember { derivedStateOf { firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0 } }
@@ -93,12 +103,19 @@ fun HomeScreen(
                     .background(categoryBackground)
                     .padding(horizontal = 6.dp)
             ) {
+                // ✅ THE FIX: Using layout modifier to avoid body recomposition when header height changes
                 Column(
                     modifier = Modifier
                         .graphicsLayer {
                             translationY = with(density) { -scrollOffset.value.dp.toPx() }
                         }
-                        .height(headerHeightDp.value)
+                        .layout { measurable, constraints ->
+                            val currentHeight = headerHeightDp.value.roundToPx()
+                            val placeable = measurable.measure(constraints.copy(minHeight = currentHeight, maxHeight = currentHeight))
+                            layout(constraints.maxWidth, currentHeight) {
+                                placeable.placeRelative(0, 0)
+                            }
+                        }
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                 ) {
                     Row(
@@ -189,12 +206,12 @@ fun HomeScreen(
                 label = "SlideTabTransition"
             ) { index ->
                 when (index) {
-                    0 -> AllCategoryScreen(navController, listState = listState)
-                    1 -> SummerCategoryScreen(navController, listState = listState)
-                    2 -> ElectronicsScreen(navController, listState = listState)
-                    3 -> BeautyScreen(navController, listState = listState)
-                    4 -> KidsScreen(navController, listState = listState)
-                    else -> AllCategoryScreen(navController, listState = listState)
+                    0 -> AllCategoryScreen(navController, listState = listState, canLoadImages = canLoadImages)
+                    1 -> SummerCategoryScreen(navController, listState = listState, canLoadImages = canLoadImages)
+                    2 -> ElectronicsScreen(navController, listState = listState, canLoadImages = canLoadImages)
+                    3 -> BeautyScreen(navController, listState = listState, canLoadImages = canLoadImages)
+                    4 -> KidsScreen(navController, listState = listState, canLoadImages = canLoadImages)
+                    else -> AllCategoryScreen(navController, listState = listState, canLoadImages = canLoadImages)
                 }
             }
         }

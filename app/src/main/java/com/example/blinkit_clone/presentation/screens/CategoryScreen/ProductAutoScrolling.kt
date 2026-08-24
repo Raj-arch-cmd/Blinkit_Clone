@@ -11,17 +11,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.blinkit_clone.R
 import kotlin.math.ceil
 
 @Composable
 fun AutoScrollingProductCarousel(
     speed: Float = 0.8f,
-    spacing: Dp = 12.dp
+    spacing: Dp = 12.dp,
+    canLoadImages: Boolean = true // ✅ NEW: Defer decoding
 ) {
     val products = remember {
         listOf(
@@ -40,7 +44,8 @@ fun AutoScrollingProductCarousel(
     AutoScrollingHorizontalColumn(
         products = products,
         speed = speed,
-        spacing = spacing
+        spacing = spacing,
+        canLoadImages = canLoadImages
     )
 }
 
@@ -48,7 +53,8 @@ fun AutoScrollingProductCarousel(
 fun AutoScrollingHorizontalColumn(
     products: List<ProductItemAutoScroll>,
     speed: Float,
-    spacing: Dp
+    spacing: Dp,
+    canLoadImages: Boolean
 ) {
     val scrollOffset = remember { mutableFloatStateOf(0f) }
     val itemWidth = 110.dp
@@ -58,10 +64,10 @@ fun AutoScrollingHorizontalColumn(
     val totalItemWidthPx = itemWidthPx + spacingPx
 
     val itemsPerColumn = 3
+    val repeatedProducts = remember { List(10) { products }.flatten() }
+    
     val configuration = LocalConfiguration.current
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-
-    val repeatedProducts = remember { List(10) { products }.flatten() }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -75,43 +81,63 @@ fun AutoScrollingHorizontalColumn(
         val columnCount = ceil(repeatedProducts.size.toFloat() / itemsPerColumn).toInt()
         val totalWidth = columnCount * totalItemWidthPx
 
+        var actuallyComposed = 0
+
         for (col in 0 until columnCount) {
             val baseOffset = col * totalItemWidthPx
-            val xOffset = (baseOffset - scrollOffset.floatValue) % totalWidth
             
-            val finalX = if (xOffset < -totalItemWidthPx) xOffset + totalWidth else xOffset
+            // ✅ THE FIX: Calculate horizontal position for visibility culling
+            // We do this before composition to decide if we should emit this Column at all.
+            var currentX = (baseOffset - scrollOffset.floatValue) % totalWidth
+            if (currentX < -totalItemWidthPx) currentX += totalWidth
 
-            if (finalX > -totalItemWidthPx * 2 && finalX < screenWidthPx + totalItemWidthPx) {
+            // ✅ VISIBILITY CULLING: Only compose if the column is visible or within a small buffer
+            if (currentX > -totalItemWidthPx && currentX < screenWidthPx + totalItemWidthPx) {
+                actuallyComposed++
                 Column(
                     modifier = Modifier
-                        .graphicsLayer { translationX = finalX }
+                        .graphicsLayer { translationX = currentX }
                         .width(itemWidth)
                         .padding(top = if (col % 2 == 0) 0.dp else 40.dp),
                     verticalArrangement = Arrangement.spacedBy(spacing)
                 ) {
                     for (row in 0 until itemsPerColumn) {
-                        val index = (col * itemsPerColumn + row) % repeatedProducts.size
-                        ProductCardForAutoScroll(product = repeatedProducts[index])
+                        ProductCardForAutoScroll(
+                            product = repeatedProducts[(col * itemsPerColumn + row) % repeatedProducts.size],
+                            canLoadImages = canLoadImages
+                        )
                     }
                 }
             }
         }
+        
+        // Final verification log removed for production performance
     }
 }
 
 @Composable
-fun ProductCardForAutoScroll(product: ProductItemAutoScroll) {
+fun ProductCardForAutoScroll(
+    product: ProductItemAutoScroll,
+    canLoadImages: Boolean
+) {
+    val context = LocalContext.current
+    
     Card(
         modifier = Modifier
             .size(110.dp)
             .padding(4.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // ✅ THE FIX: Zero elevation for background items
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AsyncImage(
-                model = product.imageRes,
+                model = if (canLoadImages) ImageRequest.Builder(context)
+                    .data(product.imageRes)
+                    .size(200) 
+                    .precision(Precision.INEXACT)
+                    .crossfade(true)
+                    .build() else null,
                 contentDescription = product.name,
                 modifier = Modifier.fillMaxSize().padding(12.dp),
                 contentScale = ContentScale.Fit
@@ -120,4 +146,5 @@ fun ProductCardForAutoScroll(product: ProductItemAutoScroll) {
     }
 }
 
+@Immutable
 data class ProductItemAutoScroll(val imageRes: Int, val name: String)

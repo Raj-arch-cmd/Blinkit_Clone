@@ -1,7 +1,9 @@
 package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class BlinkItCategoryData(
     val title: String,
     @DrawableRes val icon: Int

@@ -2,7 +2,6 @@ package com.example.blinkit_clone.presentation.screens.CategoryScreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.blinkit_clone.R
 import com.example.blinkit_clone.Utills.CartViewModel
 import com.example.blinkit_clone.data.model.ProductItem
@@ -39,7 +40,8 @@ import com.example.blinkit_clone.presentation.components.QuantitySelector
 @Composable
 fun ProductScreen(
     navController: NavHostController,
-    cartViewModel: CartViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    canLoadImages: Boolean = true
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -157,10 +159,11 @@ fun ProductScreen(
                 .background(color = Color.LightGray.copy(alpha = 0.1f))
         ) {
             item {
-                Image(
-                    painter = painterResource(product.imageRes),
+                AsyncImage(
+                    model = if (canLoadImages) product.imageRes else null,
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth
                 )
                 Column(
                     modifier = Modifier
@@ -169,7 +172,7 @@ fun ProductScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     ProductDetailCard(product = product)
-                    PeopleAlsoBoughtCard(navController, cartViewModel = cartViewModel)
+                    PeopleAlsoBoughtCard(navController, cartViewModel = cartViewModel, canLoadImages = canLoadImages)
                 }
             }
         }
@@ -225,7 +228,8 @@ fun ProductDetailCard(product: ProductItem) {
 @Composable
 fun PeopleAlsoBoughtCard(
     navController: NavHostController,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    canLoadImages: Boolean = true
 ) {
     val cartItems by cartViewModel.cartItems.collectAsState()
     val productItems = remember {
@@ -262,7 +266,8 @@ fun PeopleAlsoBoughtCard(
                         itemQuantity = quantity,
                         onAdd = { cartViewModel.addProduct(product) },
                         onRemove = { cartViewModel.removeProduct(product) },
-                        navController = navController
+                        navController = navController,
+                        canLoadImages = canLoadImages
                     )
                 }
             }
