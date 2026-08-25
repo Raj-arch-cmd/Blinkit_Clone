@@ -1,8 +1,24 @@
 # 🛒 Blinkit Clone — Android App
 
-A Blinkit-inspired Android grocery delivery application built as a learning project to explore modern Android development, Firebase authentication, UI design, navigation, and APK deployment.
+A Blinkit-inspired Android grocery delivery application built as a learning project to explore modern Android development, Firebase authentication, UI design, navigation, performance optimization, and APK deployment.
 
 > ⚠️ This is an independent learning project and is not affiliated with or endorsed by Blinkit.
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/login.png.jpeg" width="190">
+  <img src="screenshots/HomeScreen.png.jpeg" width="190">
+  <img src="screenshots/category.png.jpeg" width="190">
+</p>
+
+<p align="center">
+  <img src="screenshots/CartScreen.png.jpeg" width="190">
+  <img src="screenshots/OrderAgainScreen.png.jpeg" width="190">
+  <img src="screenshots/ProfileScreen.png.jpeg" width="190">
+</p>
 
 ---
 
@@ -10,7 +26,7 @@ A Blinkit-inspired Android grocery delivery application built as a learning proj
 
 ### 👉 [Download Android APK — v1.0.0](https://github.com/Raj-arch-cmd/Blinkit_Clone/releases/tag/v1.0.0)
 
-Download the APK from the GitHub Release and install it on an Android device.
+Download the signed release APK from GitHub Releases and install it on an Android device.
 
 > **Note:** Android may display a warning when installing an APK downloaded outside Google Play. This is expected for a manually distributed APK.
 
@@ -55,7 +71,7 @@ Download the APK from the GitHub Release and install it on an Android device.
 
 The application follows a structured Android architecture with separation between UI, authentication, navigation, and data-related components.
 
-### Main flow
+### Main Application Flow
 
 ```text
 User
@@ -69,14 +85,15 @@ Home Screen
  ├── Categories
  ├── Search
  ├── Products
- ├── Product Details
- │
- ▼
-Cart
- │
- ▼
-Orders
- │
- ▼
-Profile
- └── Logout
+ └── Product Details
+          │
+          ▼
+        Cart
+          │
+          ▼
+        Orders
+          │
+          ▼
+       Profile
+          │
+          └── Logout
