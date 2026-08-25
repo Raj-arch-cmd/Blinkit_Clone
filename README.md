@@ -6,7 +6,7 @@ A Blinkit-inspired Android grocery delivery application built as a learning proj
 
 ---
 
-## 📱 Download & Try the App
+## 📱 Download Android APK
 
 ### 👉 [Download Android APK — v1.0.0](https://github.com/Raj-arch-cmd/Blinkit_Clone/releases/tag/v1.0.0)
 
