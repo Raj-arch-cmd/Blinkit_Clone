@@ -17,7 +17,7 @@ A Blinkit-inspired Android grocery delivery application built as a learning proj
 <p align="center">
   <img src="screenshots/CartScreen.png.jpeg" width="190">
   <img src="screenshots/OrderAgainScreen.png.jpeg" width="190">
-  <img src="screenshots/ProfileScreen.png.jpeg" width="190">
+  <img src="screenshots/ProfileScreen.jpeg" width="190">
 </p>
 
 ---
