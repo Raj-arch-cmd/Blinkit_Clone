@@ -62,30 +62,38 @@ This **Blinkit Clone** replicates the core user experience of modern quick-comme
 
 ---
 
-## App Screenshots
+## 📱 App Screenshots
 
-The repository includes visual category banners and promotional assets showcasing the application's design language:
-
-<table>
+<table align="center">
   <tr>
-    <td align="center"><b>Winter / All Category Banner</b></td>
-    <td align="center"><b>Summer Category Banner</b></td>
-    <td align="center"><b>Electronics Category Banner</b></td>
+    <td align="center" width="33%"><b>Login & Authentication</b></td>
+    <td align="center" width="33%"><b>Home Dashboard</b></td>
+    <td align="center" width="33%"><b>Multi-Category Store</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="app/src/main/res/drawable-nodpi/allwinterbanner.png" width="280" alt="All Winter Banner"/></td>
-    <td align="center"><img src="app/src/main/res/drawable-nodpi/summerbanner.png" width="280" alt="Summer Banner"/></td>
-    <td align="center"><img src="app/src/main/res/drawable-nodpi/electronics_banner.png" width="280" alt="Electronics Banner"/></td>
+    <td align="center"><img src="screenshots/login.png.jpeg" width="220" alt="Login & Authentication"/></td>
+    <td align="center"><img src="screenshots/HomeScreen.png.jpeg" width="220" alt="Home Dashboard"/></td>
+    <td align="center"><img src="screenshots/category.png.jpeg" width="220" alt="Multi-Category Store"/></td>
   </tr>
   <tr>
-    <td align="center"><b>Beauty Category Banner</b></td>
-    <td align="center"><b>Kids Category Banner</b></td>
-    <td align="center"><b>Social / Donation Banner</b></td>
+    <td align="center" width="33%"><b>Shopping Cart & Checkout</b></td>
+    <td align="center" width="33%"><b>Order Again & Bestsellers</b></td>
+    <td align="center" width="33%"><b>Print Store Services</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="app/src/main/res/drawable-nodpi/beauty_banner.png" width="280" alt="Beauty Banner"/></td>
-    <td align="center"><img src="app/src/main/res/drawable-nodpi/kids_banner.png" width="280" alt="Kids Banner"/></td>
-    <td align="center"><img src="app/src/main/res/drawable/donationbanner.png" width="280" alt="Donation Banner"/></td>
+    <td align="center"><img src="screenshots/CartScreen.png.jpeg" width="220" alt="Shopping Cart"/></td>
+    <td align="center"><img src="screenshots/OrderAgainScreen.png.jpeg" width="220" alt="Order Again Screen"/></td>
+    <td align="center"><img src="screenshots/PrintScreen.jpeg" width="220" alt="Print Store Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><b>User Profile & Account</b></td>
+    <td align="center" width="33%"></td>
+    <td align="center" width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/ProfileScreen.jpeg" width="220" alt="User Profile Screen"/></td>
+    <td align="center"></td>
+    <td align="center"></td>
   </tr>
 </table>
 
